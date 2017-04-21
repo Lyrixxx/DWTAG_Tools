@@ -1,0 +1,63 @@
+c:\users\user\documents\visual studio 2013\Projects\DoctorWhoToolsWorking\DoctorWhoToolsWorking\bin\Debug\DoctorWhoToolsWorking.exe
+c:\users\user\documents\visual studio 2013\Projects\DoctorWhoToolsWorking\DoctorWhoToolsWorking\bin\Debug\DoctorWhoToolsWorking.pdb
+c:\users\user\documents\visual studio 2013\Projects\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.csprojResolveAssemblyReference.cache
+c:\users\user\documents\visual studio 2013\Projects\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.MainForm.resources
+c:\users\user\documents\visual studio 2013\Projects\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.Properties.Resources.resources
+c:\users\user\documents\visual studio 2013\Projects\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.csproj.GenerateResource.Cache
+c:\users\user\documents\visual studio 2013\Projects\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.exe
+c:\users\user\documents\visual studio 2013\Projects\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.pdb
+c:\users\user\documents\visual studio 2013\Projects\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.About.resources
+c:\users\user\documents\visual studio 2013\Projects\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.SettingForm.resources
+c:\users\user\documents\visual studio 2013\Projects\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.TextTool.resources
+C:\Users\User\documents\visual studio 2013\Projects\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.FontEditorForm.resources
+D:\Недопроекты от Visual Studio\Projects\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.exe
+D:\Недопроекты от Visual Studio\Projects\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.pdb
+D:\Недопроекты от Visual Studio\Projects\DoctorWhoToolsWorking\DoctorWhoToolsWorking\bin\Debug\DoctorWhoToolsWorking.exe
+D:\Недопроекты от Visual Studio\Projects\DoctorWhoToolsWorking\DoctorWhoToolsWorking\bin\Debug\DoctorWhoToolsWorking.pdb
+D:\Недопроекты от Visual Studio\Projects\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.csprojResolveAssemblyReference.cache
+D:\Недопроекты от Visual Studio\Projects\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.About.resources
+D:\Недопроекты от Visual Studio\Projects\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.FontEditorForm.resources
+D:\Недопроекты от Visual Studio\Projects\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.MainForm.resources
+D:\Недопроекты от Visual Studio\Projects\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.Properties.Resources.resources
+D:\Недопроекты от Visual Studio\Projects\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.SettingForm.resources
+D:\Недопроекты от Visual Studio\Projects\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.TextTool.resources
+D:\Недопроекты от Visual Studio\Projects\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.csproj.GenerateResource.Cache
+D:\Недопроекты от Visual Studio\Projects\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.EpcViewer.resources
+E:\Dropbox\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\bin\Debug\DoctorWhoToolsWorking.exe
+E:\Dropbox\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\bin\Debug\DoctorWhoToolsWorking.pdb
+E:\Dropbox\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.csprojResolveAssemblyReference.cache
+E:\Dropbox\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.About.resources
+E:\Dropbox\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.EpcViewer.resources
+E:\Dropbox\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.FontEditorForm.resources
+E:\Dropbox\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.MainForm.resources
+E:\Dropbox\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.Properties.Resources.resources
+E:\Dropbox\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.SettingForm.resources
+E:\Dropbox\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.TextTool.resources
+E:\Dropbox\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.csproj.GenerateResource.Cache
+E:\Dropbox\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.exe
+E:\Dropbox\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.pdb
+D:\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\bin\Debug\DoctorWhoToolsWorking.exe
+D:\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\bin\Debug\DoctorWhoToolsWorking.pdb
+D:\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.csprojResolveAssemblyReference.cache
+D:\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.About.resources
+D:\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.EpcViewer.resources
+D:\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.FontEditorForm.resources
+D:\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.MainForm.resources
+D:\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.Properties.Resources.resources
+D:\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.SettingForm.resources
+D:\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.TextTool.resources
+D:\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.csproj.GenerateResource.Cache
+D:\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.exe
+D:\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.pdb
+C:\Users\Pavel\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\bin\Debug\DoctorWhoTheAdventureGamesTools.exe
+C:\Users\Pavel\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\bin\Debug\DoctorWhoTheAdventureGamesTools.pdb
+C:\Users\Pavel\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.About.resources
+C:\Users\Pavel\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.EpcViewer.resources
+C:\Users\Pavel\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.FontEditorForm.resources
+C:\Users\Pavel\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.MainForm.resources
+C:\Users\Pavel\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoTheAdventureGamesTools.Properties.Resources.resources
+C:\Users\Pavel\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.SettingForm.resources
+C:\Users\Pavel\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.TextTool.resources
+C:\Users\Pavel\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoToolsWorking.csproj.GenerateResource.Cache
+C:\Users\Pavel\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoTheAdventureGamesTools.exe
+C:\Users\Pavel\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Debug\DoctorWhoTheAdventureGamesTools.pdb
