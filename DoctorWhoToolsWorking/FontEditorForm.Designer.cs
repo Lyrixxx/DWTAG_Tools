@@ -52,13 +52,6 @@
             this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.exportTextureddsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importTextureddsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.importMulticoordinateFromUBFGxmlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.importCoordinateFromUBFGBMPFonttypefntToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.importCoordinateFromBMPFontGeneratorXMLtypefntToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.importCoordinateFromShoeBoxfntToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.importMultyLitteraFontGeneratorXMLtypefntToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.importMultiFontGeneratorXMLtypefntExperimentalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.importTexturesSomehowfntToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importMultitexturesfntToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importOldWorkedMethodfntToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
@@ -227,103 +220,36 @@
             this.contextMenuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.exportTextureddsToolStripMenuItem,
             this.importTextureddsToolStripMenuItem,
-            this.importMulticoordinateFromUBFGxmlToolStripMenuItem,
-            this.importCoordinateFromUBFGBMPFonttypefntToolStripMenuItem,
-            this.importCoordinateFromBMPFontGeneratorXMLtypefntToolStripMenuItem,
-            this.importCoordinateFromShoeBoxfntToolStripMenuItem,
-            this.importMultyLitteraFontGeneratorXMLtypefntToolStripMenuItem,
-            this.importMultiFontGeneratorXMLtypefntExperimentalToolStripMenuItem,
-            this.importTexturesSomehowfntToolStripMenuItem,
             this.importMultitexturesfntToolStripMenuItem,
             this.importOldWorkedMethodfntToolStripMenuItem});
             this.contextMenuStrip2.Name = "contextMenuStrip2";
-            this.contextMenuStrip2.Size = new System.Drawing.Size(634, 356);
+            this.contextMenuStrip2.Size = new System.Drawing.Size(306, 136);
             // 
             // exportTextureddsToolStripMenuItem
             // 
             this.exportTextureddsToolStripMenuItem.Name = "exportTextureddsToolStripMenuItem";
-            this.exportTextureddsToolStripMenuItem.Size = new System.Drawing.Size(633, 32);
+            this.exportTextureddsToolStripMenuItem.Size = new System.Drawing.Size(305, 26);
             this.exportTextureddsToolStripMenuItem.Text = "Export texture (*.dds)";
             this.exportTextureddsToolStripMenuItem.Click += new System.EventHandler(this.exportTextureddsToolStripMenuItem_Click);
             // 
             // importTextureddsToolStripMenuItem
             // 
             this.importTextureddsToolStripMenuItem.Name = "importTextureddsToolStripMenuItem";
-            this.importTextureddsToolStripMenuItem.Size = new System.Drawing.Size(633, 32);
+            this.importTextureddsToolStripMenuItem.Size = new System.Drawing.Size(305, 26);
             this.importTextureddsToolStripMenuItem.Text = "Import texture (*.dds)";
             this.importTextureddsToolStripMenuItem.Click += new System.EventHandler(this.importTextureddsToolStripMenuItem_Click);
-            // 
-            // importMulticoordinateFromUBFGxmlToolStripMenuItem
-            // 
-            this.importMulticoordinateFromUBFGxmlToolStripMenuItem.Enabled = false;
-            this.importMulticoordinateFromUBFGxmlToolStripMenuItem.Name = "importMulticoordinateFromUBFGxmlToolStripMenuItem";
-            this.importMulticoordinateFromUBFGxmlToolStripMenuItem.Size = new System.Drawing.Size(633, 32);
-            this.importMulticoordinateFromUBFGxmlToolStripMenuItem.Text = "Import multi-coordinate from UBFG (*.xml)";
-            this.importMulticoordinateFromUBFGxmlToolStripMenuItem.Visible = false;
-            this.importMulticoordinateFromUBFGxmlToolStripMenuItem.Click += new System.EventHandler(this.importMulticoordinateFromUBFGxmlToolStripMenuItem_Click);
-            // 
-            // importCoordinateFromUBFGBMPFonttypefntToolStripMenuItem
-            // 
-            this.importCoordinateFromUBFGBMPFonttypefntToolStripMenuItem.Enabled = false;
-            this.importCoordinateFromUBFGBMPFonttypefntToolStripMenuItem.Name = "importCoordinateFromUBFGBMPFonttypefntToolStripMenuItem";
-            this.importCoordinateFromUBFGBMPFonttypefntToolStripMenuItem.Size = new System.Drawing.Size(633, 32);
-            this.importCoordinateFromUBFGBMPFonttypefntToolStripMenuItem.Text = "Import coordinate from UBFG BMPFont-type (*.fnt)";
-            this.importCoordinateFromUBFGBMPFonttypefntToolStripMenuItem.Visible = false;
-            this.importCoordinateFromUBFGBMPFonttypefntToolStripMenuItem.Click += new System.EventHandler(this.importCoordinateFromUBFGBMPFonttypefntToolStripMenuItem_Click);
-            // 
-            // importCoordinateFromBMPFontGeneratorXMLtypefntToolStripMenuItem
-            // 
-            this.importCoordinateFromBMPFontGeneratorXMLtypefntToolStripMenuItem.Enabled = false;
-            this.importCoordinateFromBMPFontGeneratorXMLtypefntToolStripMenuItem.Name = "importCoordinateFromBMPFontGeneratorXMLtypefntToolStripMenuItem";
-            this.importCoordinateFromBMPFontGeneratorXMLtypefntToolStripMenuItem.Size = new System.Drawing.Size(633, 32);
-            this.importCoordinateFromBMPFontGeneratorXMLtypefntToolStripMenuItem.Text = "Import coordinate from Littera Font Generator XML-type (*.fnt)";
-            this.importCoordinateFromBMPFontGeneratorXMLtypefntToolStripMenuItem.Visible = false;
-            this.importCoordinateFromBMPFontGeneratorXMLtypefntToolStripMenuItem.Click += new System.EventHandler(this.importCoordinateFromBMPFontGeneratorXMLtypefntToolStripMenuItem_Click);
-            // 
-            // importCoordinateFromShoeBoxfntToolStripMenuItem
-            // 
-            this.importCoordinateFromShoeBoxfntToolStripMenuItem.Enabled = false;
-            this.importCoordinateFromShoeBoxfntToolStripMenuItem.Name = "importCoordinateFromShoeBoxfntToolStripMenuItem";
-            this.importCoordinateFromShoeBoxfntToolStripMenuItem.Size = new System.Drawing.Size(633, 32);
-            this.importCoordinateFromShoeBoxfntToolStripMenuItem.Text = "Import coordinate from ShoeBox (*.fnt)";
-            this.importCoordinateFromShoeBoxfntToolStripMenuItem.Visible = false;
-            this.importCoordinateFromShoeBoxfntToolStripMenuItem.Click += new System.EventHandler(this.importCoordinateFromShoeBoxfntToolStripMenuItem_Click);
-            // 
-            // importMultyLitteraFontGeneratorXMLtypefntToolStripMenuItem
-            // 
-            this.importMultyLitteraFontGeneratorXMLtypefntToolStripMenuItem.Name = "importMultyLitteraFontGeneratorXMLtypefntToolStripMenuItem";
-            this.importMultyLitteraFontGeneratorXMLtypefntToolStripMenuItem.Size = new System.Drawing.Size(633, 32);
-            this.importMultyLitteraFontGeneratorXMLtypefntToolStripMenuItem.Text = "Import multy Littera Font Generator XML-type (*.fnt)";
-            this.importMultyLitteraFontGeneratorXMLtypefntToolStripMenuItem.Visible = false;
-            this.importMultyLitteraFontGeneratorXMLtypefntToolStripMenuItem.Click += new System.EventHandler(this.importMultyLitteraFontGeneratorXMLtypefntToolStripMenuItem_Click);
-            // 
-            // importMultiFontGeneratorXMLtypefntExperimentalToolStripMenuItem
-            // 
-            this.importMultiFontGeneratorXMLtypefntExperimentalToolStripMenuItem.Name = "importMultiFontGeneratorXMLtypefntExperimentalToolStripMenuItem";
-            this.importMultiFontGeneratorXMLtypefntExperimentalToolStripMenuItem.Size = new System.Drawing.Size(633, 32);
-            this.importMultiFontGeneratorXMLtypefntExperimentalToolStripMenuItem.Text = "Import multi Font Generator XML-type (*.fnt). Experimental";
-            this.importMultiFontGeneratorXMLtypefntExperimentalToolStripMenuItem.Visible = false;
-            this.importMultiFontGeneratorXMLtypefntExperimentalToolStripMenuItem.Click += new System.EventHandler(this.importMultiFontGeneratorXMLtypefntExperimentalToolStripMenuItem_Click);
-            // 
-            // importTexturesSomehowfntToolStripMenuItem
-            // 
-            this.importTexturesSomehowfntToolStripMenuItem.Name = "importTexturesSomehowfntToolStripMenuItem";
-            this.importTexturesSomehowfntToolStripMenuItem.Size = new System.Drawing.Size(633, 32);
-            this.importTexturesSomehowfntToolStripMenuItem.Text = "Import textures somehow (*.fnt)";
-            this.importTexturesSomehowfntToolStripMenuItem.Visible = false;
-            this.importTexturesSomehowfntToolStripMenuItem.Click += new System.EventHandler(this.importTexturesSomehowfntToolStripMenuItem_Click);
             // 
             // importMultitexturesfntToolStripMenuItem
             // 
             this.importMultitexturesfntToolStripMenuItem.Name = "importMultitexturesfntToolStripMenuItem";
-            this.importMultitexturesfntToolStripMenuItem.Size = new System.Drawing.Size(633, 32);
+            this.importMultitexturesfntToolStripMenuItem.Size = new System.Drawing.Size(305, 26);
             this.importMultitexturesfntToolStripMenuItem.Text = "Import multitextures (*.fnt)";
             this.importMultitexturesfntToolStripMenuItem.Click += new System.EventHandler(this.importMultitexturesfntToolStripMenuItem_Click);
             // 
             // importOldWorkedMethodfntToolStripMenuItem
             // 
             this.importOldWorkedMethodfntToolStripMenuItem.Name = "importOldWorkedMethodfntToolStripMenuItem";
-            this.importOldWorkedMethodfntToolStripMenuItem.Size = new System.Drawing.Size(633, 32);
+            this.importOldWorkedMethodfntToolStripMenuItem.Size = new System.Drawing.Size(305, 26);
             this.importOldWorkedMethodfntToolStripMenuItem.Text = "Import old worked method (*.fnt)";
             this.importOldWorkedMethodfntToolStripMenuItem.Click += new System.EventHandler(this.importOldWorkedMethodfntToolStripMenuItem_Click);
             // 
@@ -393,7 +319,7 @@
             this.fileToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1216, 36);
+            this.menuStrip1.Size = new System.Drawing.Size(1216, 28);
             this.menuStrip1.TabIndex = 9;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -405,14 +331,14 @@
             this.saveAsToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(54, 32);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(44, 24);
             this.fileToolStripMenuItem.Text = "File";
             // 
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
             this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(287, 32);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(231, 26);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
@@ -420,7 +346,7 @@
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(287, 32);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(231, 26);
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
@@ -429,14 +355,14 @@
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
             this.saveAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.S)));
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(287, 32);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(231, 26);
             this.saveAsToolStripMenuItem.Text = "Save As..";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click_1);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(287, 32);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(231, 26);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -501,14 +427,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn x_advanced_column;
         private System.Windows.Forms.DataGridViewTextBoxColumn y_offset_column;
         private System.Windows.Forms.DataGridViewTextBoxColumn visible_column;
-        private System.Windows.Forms.ToolStripMenuItem importMulticoordinateFromUBFGxmlToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem importCoordinateFromBMPFontGeneratorXMLtypefntToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem importCoordinateFromUBFGBMPFonttypefntToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem importCoordinateFromShoeBoxfntToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem importMultyLitteraFontGeneratorXMLtypefntToolStripMenuItem;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.ToolStripMenuItem importMultiFontGeneratorXMLtypefntExperimentalToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem importTexturesSomehowfntToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem importMultitexturesfntToolStripMenuItem;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;

@@ -40,7 +40,7 @@
             "\"Doctor Who: adventure games\"",
             "It can export and import text and fonts.",
             "",
-            "Version 1.0a",
+            "Version 1.0",
             "First version."});
             this.listBox1.Location = new System.Drawing.Point(11, 12);
             this.listBox1.Name = "listBox1";

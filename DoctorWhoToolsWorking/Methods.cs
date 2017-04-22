@@ -21,31 +21,6 @@ namespace DoctorWhoToolsWorking
             }
         }
 
-        public class ht //Данные о нескольких текстурах
-        {
-
-            public byte[] tex_data; //Данные текстур, которые прописаны в координатах
-            public byte[] x_start; //Какие-то нулевые значения
-            public byte[] y_start; //Начало блока с шрифтами (Обычно это используется в мультишрифтах, которые нарисованы на 1 текстуре)
-            public byte[] x_end; //Непонятные данные. Что они означают, так и не понял.
-            public byte[] y_end; //Конец блока с шрифтами
-            public byte[] tex_num; //Номер текстуры
-
-            public ht() { }
-            public ht(byte[] _tex_data, byte[] _x_start, byte[] _y_start,
-                byte[] _x_end, byte[] _y_end, byte[] _tex_num)
-            {
-                this.tex_data = _tex_data;
-                this.x_start = _x_start;
-                this.y_start = _y_start;
-                this.x_end = _x_end;
-                this.y_end = _y_end;
-                this.tex_num = _tex_num;
-            }
-        }
-
-
-
         public static string GetFileNameOnly(string name, string del)
         {
             return name.Replace(del, string.Empty);
@@ -134,10 +109,5 @@ namespace DoctorWhoToolsWorking
             }
         else return true;
         }
-
-        /*public class FontCoordinates
-        {
-            public 
-        }*/
     }
 }

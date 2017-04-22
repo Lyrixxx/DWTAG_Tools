@@ -34,3 +34,15 @@ C:\Users\Pavel\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Release\D
 C:\Users\Pavel\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Release\DoctorWhoToolsWorking.csproj.GenerateResource.Cache
 C:\Users\Pavel\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Release\DoctorWhoTheAdventureGamesTools.exe
 C:\Users\Pavel\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Release\DoctorWhoTheAdventureGamesTools.pdb
+D:\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\bin\Release\DoctorWhoTheAdventureGamesTools.exe
+D:\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\bin\Release\DoctorWhoTheAdventureGamesTools.pdb
+D:\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Release\DoctorWhoToolsWorking.About.resources
+D:\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Release\DoctorWhoToolsWorking.EpcViewer.resources
+D:\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Release\DoctorWhoToolsWorking.FontEditorForm.resources
+D:\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Release\DoctorWhoToolsWorking.MainForm.resources
+D:\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Release\DoctorWhoTheAdventureGamesTools.Properties.Resources.resources
+D:\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Release\DoctorWhoToolsWorking.SettingForm.resources
+D:\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Release\DoctorWhoToolsWorking.TextTool.resources
+D:\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Release\DoctorWhoToolsWorking.csproj.GenerateResource.Cache
+D:\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Release\DoctorWhoTheAdventureGamesTools.exe
+D:\Dropbox\DoctorWhoToolsWorking\DoctorWhoToolsWorking\obj\Release\DoctorWhoTheAdventureGamesTools.pdb

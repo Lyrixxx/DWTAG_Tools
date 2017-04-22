@@ -12,12 +12,15 @@ namespace DoctorWhoToolsWorking
 {
     public partial class FontEditorForm : Form
     {
-        byte[] binContent = new byte[0];
-        byte[] relContent = new byte[0];
-        int offset, poz, dds_count, links_count;
+        byte[] binContent = new byte[0]; //For reading dat file
+        byte[] relContent = new byte[0]; //For reading rel file
+        //Some vars for reading and changing in dat file
+        int offset, poz, dds_count, links_count; 
         int count_fonts;
-        bool edited, read, rel_exists, tex_count_changed;
-        string font_path, rel_path;
+        
+        string font_path, rel_path; //public vars for font and rel paths.
+
+        bool edited, read, rel_exists, tex_count_changed; //Some booleans.
 
         OpenFileDialog OpenFont = new OpenFileDialog();
         public FontEditorForm()
@@ -27,38 +30,39 @@ namespace DoctorWhoToolsWorking
 
         public static class fnt_struct
         {
-            public struct coords
+            public struct coords //Struct for coordinates
             {
-                public short char_id; //Символ
-                public short x_start; //X
-                public short y_start; //Y
-                public short width; //Ширина
-                public short height; //Высота
-                public short x_offset; //Смещение по X
-                public short y_offset; //Смещение по Y
-                public short x_advance; //Параметр для X
-                public int page; //Номер текстуры
-                public bool visable; //Видимость символа
-                public int font_no; //Номер шрифта
+                public short char_id; //Symbol
+                public short x_start; //X start position
+                public short y_start; //Y start position
+                public short width; //Width of symbol
+                public short height; //Height of symbol
+                public short x_offset; //Offset by X position
+                public short y_offset; //Offset by Y position
+                public short x_advance; //Advanced parametr for width
+                public int page; //Number of texture
+                public bool visable; //Visible or not visible symbol
+                public int font_no; //Font number
             }
 
-            public struct kern
+            public struct kern //Struct for kerning pairs 
             {
-                public short first_ch;
-                public short second_ch;
-                public int amount;
-                public int font_no;
+                public short first_ch; //First char
+                public short second_ch; //Second char
+                public int amount; //Amount
+                public int font_no; //Number of font
             }
 
-            public struct texture_names
+            public struct texture_names //Struct for list with textures
             {
-                public string FileName;
-                public int page_id;
-                public int tex_num;
-                public int font_num;
-                public bool need_load;
+                public string FileName; //DDS file name
+                public int page_id; //Number of the page (gets from fnt file)
+                public int tex_num; //Texture number (sets for dat file)
+                public int font_num; //Font number
+                public bool need_load; //Check if another font in dat file uses the same font data (sometimes it useful for some dat-files)
             }
 
+            //Below function for loading your textures (uses after getting data from fnt file)
             public static bool TextureLoaded(ref Font_Structure newffs, List<fnt_struct.texture_names> temp_tex, string GetPath, uint offset)
             {
                 for (int c = 0; c < temp_tex.Count; c++)
@@ -89,7 +93,7 @@ namespace DoctorWhoToolsWorking
                     }
                     else if (!File.Exists(GetPath + "\\" + temp_tex[c].FileName))
                     {
-                        MessageBox.Show("Проверьте все файлы, прежде чем заменять шрифты!", "Ошибка");
+                        MessageBox.Show("Check all texture files beside fnt file.", "Import error");
                         return false;
                     }
                 }
@@ -97,6 +101,7 @@ namespace DoctorWhoToolsWorking
                 return true;
             }
 
+            //Compare count of fonts from fnt file with count of fonts in dat file
             private static bool AllRight(string[] strings, int font_count)
             {
                 int check_font = 0;
@@ -109,6 +114,7 @@ namespace DoctorWhoToolsWorking
                 else return false;
             }
 
+            //Get parameters from fnt file
             public static void GetData(string[] strings, int font_count, ref List<coords> coord, ref List<kern> kerns, ref int[] coords_count, ref int[] kern_count, ref List<texture_names> Textures)
             {
                 if (AllRight(strings, font_count))
@@ -116,25 +122,34 @@ namespace DoctorWhoToolsWorking
                     coords temp = new coords();
                     kern temp2 = new kern();
 
-                    int x_right = 0;
+                    //for padding
+                    int x_right = 0; 
                     int x_left = 0;
                     int y_up = 0;
                     int y_down = 0;
+
+                    //for spacing
                     int x_spacing = 0;
                     int y_spacing = 0;
+
+                    //Get common line height
                     int line_height = 0;
+
+                    //Count of textures in font
                     int page = 0;
-                    string file_name = null;
-                    //int kern_pair_count = 0;
-                    //int coords_count = 0;
+
+                    //Font counter
                     int font_c = 0;
+
+
                     coords_count = new int[font_count];
                     kern_count = new int[font_count];
 
                     int check_coords_count = 1;
                     int check_kern_count = 1;
 
-                    for (int n = 0; n < strings.Length; n++) //Убираем дебильные кавычки и скобки от xml файла
+                    //Check for xml tags and removing it for comfortable searching needed data (useful for xml fnt files)
+                    for (int n = 0; n < strings.Length; n++)
                     {
                         if ((strings[n].IndexOf('<') >= 0) || (strings[n].IndexOf('<') >= 0 && strings[n].IndexOf('/') > 0))
                         {
@@ -152,6 +167,7 @@ namespace DoctorWhoToolsWorking
                         }
                     }
 
+                    //getting coords, kerning pairs and textures pages
                     for (int m = 0; m < strings.Length; m++)
                     {
                         if ((strings[m].IndexOf("info face") >= 0)
@@ -207,18 +223,6 @@ namespace DoctorWhoToolsWorking
 
                             line_height = Convert.ToInt32(par[indx]);
                         }
-
-                        /*if(strings[m].IndexOf("chars count") >= 0)
-                        {
-                            string[] par = strings[m].Split(new char[] { ' ', '=', '\"', ',' });
-                            for(int t = 0; t < par.Length; t++)
-                            {
-                                if (par[t] == "count")
-                                {
-                                    coords_count = Convert.ToInt32(par[t + 1]);
-                                }
-                            }
-                        }*/
 
                         if(strings[m].IndexOf("page id") >= 0)
                         {
@@ -389,22 +393,24 @@ namespace DoctorWhoToolsWorking
                 }
                 else
                 {
-                    MessageBox.Show("Your file isn't correct!", "Error");
+                    MessageBox.Show("Your file isn't correct!", "Import error");
                 }
             }
         }
 
-        public class header_textures //Данные о нескольких текстурах
+        public class header_textures //Class for block of textures in dat file
         {
             
-            public byte[] tex_data; //Данные текстур, которые прописаны в координатах
-            public byte[] x_start; //Какие-то нулевые значения
-            public byte[] y_start; //Начало блока с шрифтами (Обычно это используется в мультишрифтах, которые нарисованы на 1 текстуре)
-            public byte[] x_end; //Непонятные данные. Что они означают, так и не понял.
-            public byte[] y_end; //Конец блока с шрифтами
-            public byte[] tex_num; //Номер текстуры
-            public int font_num; //Костыль для работы с нужными шрифтами
+            public byte[] tex_data; //Some texture data for font coordinates
+            public byte[] x_start; //Start X postition of font in texture file
+            public byte[] y_start; //Start Y postition of font in texture file
+            public byte[] x_end; //End X position of font in texture file
+            public byte[] y_end; //End X position of font in texture file
+            public byte[] tex_num; //Number of texture
+            public int font_num; //Used for comfortable importing textures in needed font
+
             public header_textures() { }
+
             public header_textures(byte[] _tex_data, byte[] _x_start, byte[] _y_start,
                 byte[] _x_end, byte[] _y_end, byte[] _tex_num, int _font_num)
             {
@@ -420,16 +426,16 @@ namespace DoctorWhoToolsWorking
             ~header_textures(){ }
         }
 
-        public class header_fonts //Данные о нескольких шрифтах
+        public class header_fonts //Class for font block in dat file
         {
-            public byte[] count_fonts; //Количество шрифтов
-            public byte[] fonts_data; //4 байта данных о шрифтах
-            public byte[] count_symbols; //количество символов в шрифте
-            public byte[] count_kernings; //количество кернинга
-            public byte[] sym_offset; //Смещение таблицы символов
-            public byte[] kern_offset; //Смещение таблицы кернинга
-            public uint kern_off; //Костыль для записи парного кернинга в файл
-            public uint sym_off;
+            public byte[] count_fonts; //Count of fonts
+            public byte[] fonts_data; //Font data
+            public byte[] count_symbols; //Count symbols in font
+            public byte[] count_kernings; //Count kerning pairs in font
+            public byte[] sym_offset; //Offset to coordinates block
+            public byte[] kern_offset; //Offset to kerning pairs block
+            public uint kern_off; //Used for my tool (maybe, later I can remove that useless variable)
+            public uint sym_off; //Used for my tool (maybe, later I can remove that useless variable)
 
             public header_fonts(byte[] _count_fonts, byte[] _fonts_data, byte[] _count_symbols,
                 byte[] _count_kernings, byte[] _sym_offset, byte[] _kern_offset, uint _kern_off, uint _sym_off)
@@ -458,19 +464,18 @@ namespace DoctorWhoToolsWorking
             ~header_fonts() { }
         }
 
-        public class Font_Structure //Структура шрифта
+        public class Font_Structure //Class for font structure
         {
-            public byte[] links_count; //количество связей между текстурами и координатами
-            public byte[] font_count; //количество шрифтов
-            public byte[] tex_count; //количество текстур
-            public byte[] tex_block; //размер блока с текстурами
-            public byte[] tex_part; //размер куска блока с текстурами (От заголовка PTEX)
-            public byte[] coord_block; //размер блока с координатами
-            public byte[] coord_part; //размер куска блока с координатами (От заголовка FONT)
-            public byte[] old_data; //старые данные для сравнения и правильной записи новых данных.
+            public byte[] links_count; //Count of texture block (need for getting font number in coordinates)
+            public byte[] font_count; //Font count
+            public byte[] tex_count; //Count of textures
+            public byte[] tex_block; //Padded size texture block
+            public byte[] tex_part; //Size texture block
+            public byte[] coord_block; //Padded size font block
+            public byte[] coord_part; //Size font block
+            public byte[] old_data; //Old data
 
-            //public List<byte[]> font_data = new List<byte[]>();
-            //public List<byte[]> tex_num = new List<byte[]>();
+
             public List<dds> texture = new List<dds>();
             public List<header_fonts> font_head = new List<header_fonts>();
             public List<header_textures> tex_head = new List<header_textures>();
@@ -496,34 +501,39 @@ namespace DoctorWhoToolsWorking
                 return other;
             }
 
+            //Function of adding textures
             public void texhead_add(byte[] _tex_data, byte[] _x_start, byte[] _y_start,
-                byte[] _x_end, byte[] _y_end, byte[] _tex_num, int _font_num) //функция по добавлению заголовка текстур
+                byte[] _x_end, byte[] _y_end, byte[] _tex_num, int _font_num) 
             {
                 tex_head.Add(new header_textures(_tex_data, _x_start, _y_start, _x_end, _y_end, _tex_num, _font_num));
             }
 
-            public void dds_add(byte[] _tex_offset, byte[] _tex_length, byte[] _dds_height, byte[] _dds_width, //функция под добавлению текстур в список
+            //Function of adding DDS
+            public void dds_add(byte[] _tex_offset, byte[] _tex_length, byte[] _dds_height, byte[] _dds_width,
                 byte[] _dds_content)
             {
                 texture.Add(new dds(_tex_offset, _tex_length, _dds_height, _dds_width, _dds_content));
             }
 
+            //Function of adding font data from font header
             public void head_add(byte[] _count_fonts, byte[] _texture_data, byte[] _count_symbols, 
-                byte[] _count_kernings, byte[] _sym_offset, byte[] _kern_offset, uint _kern_off, uint _sym_off) //функция по добавлению заголовка шрифта
+                byte[] _count_kernings, byte[] _sym_offset, byte[] _kern_offset, uint _kern_off, uint _sym_off)
             {
                 font_head.Add(new header_fonts(_count_fonts, _texture_data, _count_symbols,
                     _count_kernings, _sym_offset, _kern_offset, _kern_off, _sym_off));
             }
 
+            //Function of adding coordinates data
             public void coord_add(byte[] _texture_data, byte[] _symbol,
                 byte[] _x_start, byte[] _y_start, byte[] _coord_width, byte[] _coord_height,
                 byte[] _x_advanced, byte[] _x_offset, byte[] _y_offset,
-                byte[] _last_unknown_data, int _index, bool _new_coordinates, byte[] _font_data) //функция по добавлению координат в список
+                byte[] _last_unknown_data, int _index, bool _new_coordinates, byte[] _font_data) 
             {
                 font_coord.Add(new coordinates(_texture_data, _symbol, _x_start, _y_start,
                 _coord_width, _coord_height, _x_advanced, _x_offset, _y_offset, _last_unknown_data, _index, _new_coordinates, _font_data));
             }
 
+            //Function of adding kerning pairs data
             public void kern_add(byte[] _first_char, byte[] _second_char, byte[] _amount,
                 int _index, bool _new_kernings, byte[] _font_data)
             {
@@ -539,7 +549,7 @@ namespace DoctorWhoToolsWorking
             public byte[] second_char;
             public byte[] amount;
             public byte[] font_data;
-            public int kern_index; //индекс к данным о кернинге
+            public int kern_index;
             public bool new_kernings;
 
             public kernings() { }
@@ -570,7 +580,7 @@ namespace DoctorWhoToolsWorking
             public byte[] last_unknown_data;
             public int index;
             public bool new_coordinates;
-            public byte[] font_data; //для точного сохранения координат
+            public byte[] font_data;
 
             public coordinates() { }
             public coordinates(byte[] _texture_data, byte[] _symbol,
@@ -597,11 +607,11 @@ namespace DoctorWhoToolsWorking
 
         public class dds
         {
-            public byte[] tex_offset; //Смещение текстуры
-            public byte[] tex_length; //Длина текстуры
-            public byte[] dds_height; //высота текстур
-            public byte[] dds_width; //ширина текстур
-            public byte[] dds_content; //Содержимое текстуры           
+            public byte[] tex_offset; //Texture's offset
+            public byte[] tex_length; //Size of texture
+            public byte[] dds_height; //Height of texture
+            public byte[] dds_width; //Width of texture
+            public byte[] dds_content; //DDS texture
 
             public dds() { }
             public dds(byte[] _tex_offset, byte[] _tex_length, byte[] _dds_height, byte[] _dds_width,
@@ -617,8 +627,9 @@ namespace DoctorWhoToolsWorking
             ~dds() { }
         }
 
-        Font_Structure ffs = new Font_Structure();
+        Font_Structure ffs = new Font_Structure(); //Initialize Font Structure class
 
+        //Function for resorting symbols (need for don't crashes game)
         public static void ResortTable(ref Font_Structure newffs)
         {
             for (int k = 0; k < newffs.font_coord.Count; k++)
@@ -675,12 +686,7 @@ namespace DoctorWhoToolsWorking
             }
         }
 
-
-        private void toolStripDropDownButton1_Click(object sender, EventArgs e)
-        {
-
-        }
-
+        //Function for padding some blocks
         uint pad_it(uint num, uint pad)
         {
             uint t;
@@ -690,6 +696,7 @@ namespace DoctorWhoToolsWorking
             return (num);
         }
 
+        //Function for saving changes in rel file (need for changing offset textures in rel file)
         private void SaveRelFile(int count_tex, int links_count, byte[] content, string path)
         {
             uint texture_off = 12 + (uint)(40 * links_count);
@@ -768,7 +775,6 @@ namespace DoctorWhoToolsWorking
 
             int link_length = BitConverter.ToInt32(ffs.links_count, 0) * 40;
             int tex_info_length = BitConverter.ToInt32(ffs.tex_count, 0) * 8;
-            //byte[] temptexture = new byte[tex_info_length];
 
             byte[] tempblock = new byte[28 + link_length + tex_info_length];
 
@@ -827,40 +833,10 @@ namespace DoctorWhoToolsWorking
             Array.Copy(ffs.links_count, 0, tempblock, 16, ffs.links_count.Length);
             Array.Copy(ffs.tex_count, 0, tempblock, 20, ffs.tex_count.Length);
 
-               /* for (int i = 0; i < BitConverter.ToInt32(ffs.links_count, 0); i++)
-                {
-                    Array.Copy(ffs.tex_head[i].x_start, 0, binContent, poz, ffs.tex_head[i].x_start.Length);
-                    poz += 4;
-                    Array.Copy(ffs.tex_head[i].y_start, 0, binContent, poz, ffs.tex_head[i].y_start.Length);
-                    poz += 4;
-                    Array.Copy(ffs.tex_head[i].x_end, 0, binContent, poz, ffs.tex_head[i].x_end.Length);
-                    poz += 4;
-                    Array.Copy(ffs.tex_head[i].y_start, 0, binContent, poz, ffs.tex_head[i].y_start.Length);
-                    poz += 4;
-                    Array.Copy(ffs.tex_head[i].x_end, 0, binContent, poz, ffs.tex_head[i].x_end.Length);
-                    poz += 4;
-                    Array.Copy(ffs.tex_head[i].y_end, 0, binContent, poz, ffs.tex_head[i].y_end.Length);
-                    poz += 4;
-                    Array.Copy(ffs.tex_head[i].x_start, 0, binContent, poz, ffs.tex_head[i].x_start.Length);
-                    poz += 4;
-                    Array.Copy(ffs.tex_head[i].y_end, 0, binContent, poz, ffs.tex_head[i].y_end.Length);
-                    poz += 4;
-                    Array.Copy(ffs.tex_head[i].tex_num, 0, binContent, poz, ffs.tex_head[i].tex_num.Length);
-                    poz += 8;
-                }*/
+            poz = offset;
 
-            //offset = poz - 4;
-            
-            //poz += 8 * BitConverter.ToInt32(ffs.tex_count, 0) - 4;
-
-            poz = offset;// - (8 * BitConverter.ToInt32(ffs.tex_count, 0) - 4);
-
-            //Methods.FindStartOfStringSomething(binContent, 0, "DDS |");
             byte[] temp_header = new byte[poz];
-            //Array.Copy(binContent, 0, temp_header, 0, poz);
             Array.Copy(tempblock, 0, temp_header, 0, poz);
-
-            //offset -= 4;
 
             offset -= 8 * BitConverter.ToInt32(ffs.tex_count, 0);
             
@@ -907,15 +883,17 @@ namespace DoctorWhoToolsWorking
             {
                 ms.Write(ffs.texture[j].dds_content, 0, ffs.texture[j].dds_content.Length);
             }
+
             byte[] temp = ms.ToArray();
+
             ms.Close();
+
             byte[] tex_header = new byte[tex_common_size];
             Array.Copy(temp, 0, tex_header, 0, temp.Length);
 
 
             poz = Methods.FindStartOfStringSomething(binContent, 0, "FONT");
 
-            //poz = Methods.FindStartOfStringSomething(binContent, poz, "FONT");
             int table_size = 28 + (32 * BitConverter.ToInt32(ffs.font_count, 0)) + 4;
             byte[] temp_table = new byte[table_size];
             Array.Copy(binContent, poz, temp_table, 0, table_size);
@@ -932,27 +910,6 @@ namespace DoctorWhoToolsWorking
             uint coords_size = (4 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 2 + 4) * (uint)coordCount;
             uint kern_size = (2 + 2 + 4) * (uint)kernCount;
 
-            //coords_size = pad_it(coords_size, 8);
-            //kern_size = pad_it(kern_size, 8);
-
-            //Удаление лишних координат
-            /*for (int i = 0; i < ffs.font_kern.Count; i++)
-            {
-                if (ffs.font_kern[i].new_kernings == false)
-                {
-                    ffs.font_kern.RemoveAt(i);
-                    i = 0;
-                }
-            }*/
-
-
-              /*  for (int j = 0; j < BitConverter.ToInt32(ffs.font_count, 0); j++)
-                {
-                    uint table_kern_offset = coords_size + BitConverter.ToUInt32(ffs.font_head[j].sym_offset, 0) - BitConverter.ToUInt32(ffs.font_head[j].count_kernings, 0) * 8;
-                    ffs.font_head[j].kern_offset = new byte[4];
-                    ffs.font_head[j].kern_offset = BitConverter.GetBytes(table_kern_offset);
-                }*/
-
             byte[] bin_coords = new byte[coords_size];
             byte[] bin_kerns = new byte[kern_size];
 
@@ -962,146 +919,6 @@ namespace DoctorWhoToolsWorking
             offset = 28;
             int sym_offset = 0;
             uint kern_offset = 0;
-
-
-                if (count_fonts > 1) //Если больше одного шрифта, то пускаем чистейший говнокод!
-                {
-                /*    List<header_fonts> temp_fonts = new List<header_fonts>();
-                    foreach (header_fonts ob in ffs.font_head)
-                    {
-                        temp_fonts.Add(new header_fonts(ob));
-                    }
-
-                    for (int i = 0; i < count_fonts; i++)
-                    {
-                        for (int j = 0; j < count_fonts - i - 1; j++)
-                        {
-                            if (BitConverter.ToUInt32(temp_fonts[j].sym_offset, 0) < BitConverter.ToUInt32(temp_fonts[j + 1].sym_offset, 0))
-                            {
-                                byte[] temp_sym_offset = temp_fonts[j].sym_offset;
-                                byte[] temp_kern_offset = temp_fonts[j].kern_offset;
-                                byte[] temp_sym_count = temp_fonts[j].count_symbols;
-                                byte[] temp_kern_count = temp_fonts[j].count_kernings;
-                                byte[] temp_font_data = temp_fonts[j].fonts_data;
-
-                                temp_fonts[j].sym_offset = temp_fonts[j + 1].sym_offset;
-                                temp_fonts[j].kern_offset = temp_fonts[j + 1].kern_offset;
-                                temp_fonts[j].count_symbols = temp_fonts[j + 1].count_symbols;
-                                temp_fonts[j].count_kernings = temp_fonts[j + 1].count_kernings;
-                                temp_fonts[j].fonts_data = temp_fonts[j + 1].fonts_data;
-
-                                temp_fonts[j + 1].sym_offset = temp_sym_offset;
-                                temp_fonts[j + 1].kern_offset = temp_kern_offset;
-                                temp_fonts[j + 1].count_symbols = temp_sym_count;
-                                temp_fonts[j + 1].count_kernings = temp_kern_count;
-                                temp_fonts[j + 1].fonts_data = temp_font_data;
-                            }
-                        }
-                    }
-                    for (int i = 1; i < count_fonts; ++i)
-                    {
-                        byte[] temp_sym_offset = temp_fonts[i].sym_offset;
-                        byte[] temp_kern_offset = temp_fonts[i].kern_offset;
-                        byte[] temp_sym_count = temp_fonts[i].count_symbols;
-                        byte[] temp_kern_count = temp_fonts[i].count_kernings;
-                        byte[] temp_font_data = temp_fonts[i].fonts_data;
-                        uint temp_kern_off = temp_fonts[i].kern_off;
-
-                        for (int j = i - 1; j >= 0 && BitConverter.ToUInt32(temp_fonts[i].sym_offset, 0) > BitConverter.ToUInt32(temp_sym_offset, 0); --j)
-                        {
-                            temp_fonts[i].sym_offset = temp_fonts[i + 1].sym_offset;
-                            temp_fonts[i].kern_offset = temp_fonts[i + 1].kern_offset;
-                            temp_fonts[i].count_symbols = temp_fonts[i + 1].count_symbols;
-                            temp_fonts[i].count_kernings = temp_fonts[i + 1].count_kernings;
-                            temp_fonts[i].fonts_data = temp_fonts[i + 1].fonts_data;
-                            temp_fonts[i].kern_off = temp_fonts[i + 1].kern_off;
-
-                            temp_fonts[i + 1].sym_offset = temp_sym_offset;
-                            temp_fonts[i + 1].kern_offset = temp_kern_offset;
-                            temp_fonts[i + 1].count_symbols = temp_sym_count;
-                            temp_fonts[i + 1].count_kernings = temp_kern_count;
-                            temp_fonts[i + 1].fonts_data = temp_font_data;
-                            temp_fonts[i + 1].kern_off = temp_kern_off;
-                        }
-                    }
-
-                    int index = 0;
-                    if (BitConverter.ToInt32(temp_fonts[0].sym_offset, 0) > BitConverter.ToInt32(temp_fonts[count_fonts - 1].sym_offset, 0)) index = count_fonts - 1;
-
-
-                    //uint sym_offs = ((uint)table_size - 16);//BitConverter.ToUInt32(temp_fonts[index].sym_offset, 0) + (BitConverter.ToUInt32(temp_fonts[index].count_symbols, 0) * 24);
-                    uint kerning_offset = BitConverter.ToUInt32(temp_fonts[index].sym_offset, 0) + coords_size;
-                    uint kern_off = 0;
-                    //uint sym_off = 0;
-
-                    if (index > 0)
-                    {
-                        for (int i = count_fonts - 1; i >= 0; i--)
-                        {
-                            /*temp_fonts[i].sym_off = sym_off;
-                            temp_fonts[i].sym_offset = new byte[4];
-                            temp_fonts[i].sym_offset = BitConverter.GetBytes(sym_offs);
-                            sym_offs += (uint)BitConverter.ToInt16(temp_fonts[i].count_symbols, 0) * 24;
-                            sym_off += (uint)BitConverter.ToInt16(temp_fonts[i].count_symbols, 0) * 24;
-                            */
-
-
-                     /*       if (BitConverter.ToInt32(temp_fonts[i].count_kernings, 0) > 0)
-                            {
-                                temp_fonts[i].kern_off = kern_off;
-                                temp_fonts[i].kern_offset = new byte[4];
-                                temp_fonts[i].kern_offset = BitConverter.GetBytes(kerning_offset);
-                                kerning_offset += (uint)BitConverter.ToInt16(temp_fonts[i].count_kernings, 0) * 8;
-                                kern_off += (uint)BitConverter.ToInt16(temp_fonts[i].count_kernings, 0) * 8;
-                            }
-                        }*/
-                    /*}
-                    else
-                    {
-                        for (int i = 0; i < count_fonts; i++)
-                        {
-                            /* temp_fonts[i].sym_off = sym_off;
-                             temp_fonts[i].sym_offset = new byte[4];
-                             temp_fonts[i].sym_offset = BitConverter.GetBytes(sym_offs);
-                             sym_offs += (uint)BitConverter.ToInt16(temp_fonts[i].count_symbols, 0) * 24;
-                             sym_off += (uint)BitConverter.ToInt16(temp_fonts[i].count_symbols, 0) * 24;*/
-
-                      /*      if (BitConverter.ToInt32(temp_fonts[i].count_kernings, 0) > 0)
-                            {
-                                temp_fonts[i].kern_off = kern_off;
-                                temp_fonts[i].kern_offset = new byte[4];
-                                temp_fonts[i].kern_offset = BitConverter.GetBytes(kerning_offset);
-                                kerning_offset += (uint)BitConverter.ToInt16(temp_fonts[i].count_kernings, 0) * 8;
-                                kern_off += (uint)BitConverter.ToInt16(temp_fonts[i].count_kernings, 0) * 8;
-                            }
-                        }
-                    }
-
-                    for (int j = 0; j < count_fonts; j++)
-                    {
-                        for (int i = 0; i < count_fonts - j - 1; i++)
-                        {
-                            if (BitConverter.ToString(temp_fonts[i].fonts_data) == BitConverter.ToString(ffs.font_head[i].fonts_data))
-                            {
-                                ffs.font_head[i].count_symbols = temp_fonts[i].count_symbols;
-                                ffs.font_head[i].sym_offset = temp_fonts[i].sym_offset;
-                                ffs.font_head[i].sym_off = temp_fonts[i].sym_off;
-
-                                ffs.font_head[i].count_kernings = temp_fonts[i].count_kernings;
-                                ffs.font_head[i].kern_offset = temp_fonts[i].kern_offset;
-                                ffs.font_head[i].kern_off = temp_fonts[i].kern_off;
-                            }
-                        }
-                    }*/
-                }
-                else
-                {
-                    uint kerning_offset = BitConverter.ToUInt32(ffs.font_head[0].sym_offset, 0) + coords_size;
-                    ffs.font_head[0].kern_offset = new byte[4];
-                    ffs.font_head[0].kern_offset = BitConverter.GetBytes(kerning_offset);
-                    ffs.font_head[0].kern_off = 0;
-                }
-
 
                 for (int i = 0; i < BitConverter.ToInt32(ffs.font_count, 0); i++)
                 {
@@ -1126,52 +943,6 @@ namespace DoctorWhoToolsWorking
                         }
                     }
                 }
-
-                    /*for (int n = 0; n < BitConverter.ToInt32(ffs.font_count, 0); n++)
-                    {
-                        Array.Copy(ffs.font_head[n].fonts_data, 0, temp_table, offset, 4);
-                        offset += 4;
-                        Array.Copy(ffs.font_head[n].count_symbols, 0, temp_table, offset, 2);
-                        offset += 2;
-                        Array.Copy(ffs.font_head[n].count_kernings, 0, temp_table, offset, 2);
-                        offset += 2;
-                        Array.Copy(ffs.font_head[n].sym_offset, 0, temp_table, offset, 4);
-                        offset += 4;
-                        Array.Copy(ffs.font_head[n].kern_offset, 0, temp_table, offset, 4);
-                        offset += 20;
-                    }*/
-            
-
-
-           /*if (count_fonts > 1)
-            {
-                for (int i = 0; i < count_fonts; i++)
-                {
-                    for (int j = 0; j < count_fonts - i - 1; j++)
-                    {
-                        if (BitConverter.ToInt32(ffs.font_head[i].sym_offset, 0) > BitConverter.ToInt32(ffs.font_head[i + 1].sym_offset, 0))
-                        {
-                            byte[] temp_sym_offset = ffs.font_head[i].sym_offset;
-                            byte[] temp_kern_offset = ffs.font_head[i].kern_offset;
-                            byte[] temp_sym_count = ffs.font_head[i].count_symbols;
-                            byte[] temp_kern_count = ffs.font_head[i].count_kernings;
-                            byte[] temp_font_data = ffs.font_head[i].fonts_data;
-
-                            ffs.font_head[i].sym_offset = ffs.font_head[i + 1].sym_offset;
-                            ffs.font_head[i].kern_offset = ffs.font_head[i + 1].kern_offset;
-                            ffs.font_head[i].count_symbols = ffs.font_head[i + 1].count_symbols;
-                            ffs.font_head[i].count_kernings = ffs.font_head[i + 1].count_kernings;
-                            ffs.font_head[i].fonts_data = ffs.font_head[i + 1].fonts_data;
-
-                            ffs.font_head[i + 1].sym_offset = temp_sym_offset;
-                            ffs.font_head[i + 1].kern_offset = temp_kern_offset;
-                            ffs.font_head[i + 1].count_symbols = temp_sym_count;
-                            ffs.font_head[i + 1].count_kernings = temp_kern_count;
-                            ffs.font_head[i + 1].fonts_data = temp_font_data;
-                        }
-                    }
-                }
-            }*/
 
             for (int j = 0; j < count_fonts; j++)
             {
@@ -1306,8 +1077,8 @@ namespace DoctorWhoToolsWorking
             if (edited == true)
             {
                 DialogResult status = MessageBox.Show("Save font?", "Exit", MessageBoxButtons.YesNoCancel);
+
                 if (status == DialogResult.No)
-                // если (состояние == DialogResult. Нет) 
                 {
                     ffs = null;
                 }
@@ -1336,7 +1107,7 @@ namespace DoctorWhoToolsWorking
         private void FontEditorForm_Load(object sender, EventArgs e)
         {
             dataGridTextures.Enabled = false;
-            comboBox1.Enabled = false; //Выбор шрифта
+            comboBox1.Enabled = false; //Combobox for multifonts
             edited = false;
             rel_exists = false;
             label2.Text = "";
@@ -1346,7 +1117,7 @@ namespace DoctorWhoToolsWorking
 
         public void openandreadfont(string filename)
         {
-            //Очистка списков и comboBoxа.
+            //Clear lists and comboboxes
 
             //ffs.font_data.Clear();
             ffs.font_head.Clear();
@@ -1392,7 +1163,7 @@ namespace DoctorWhoToolsWorking
                     offset += 8;
 
 
-                    //работа с текстурами
+                    //Getting textures...
                     #region
                     ffs.tex_count = new byte[4];//количество текстур
                     ffs.links_count = new byte[4]; //Количество количество связей
@@ -1470,7 +1241,7 @@ namespace DoctorWhoToolsWorking
                     }
                     #endregion
 
-                    //работа с координатами
+                    //Getting coordinates and kerning pairs
                     #region
                     ffs.coord_block = new byte[4];
                     ffs.coord_part = new byte[4];
@@ -1682,23 +1453,13 @@ namespace DoctorWhoToolsWorking
                     }
 
                     label2.Text = test;
-                    /*StreamWriter sw = new StreamWriter("C:\\Users\\User\\Desktop\\OpenResult.txt");
-                for (int i = 0; i < ffs.font_coord.Count(); i++)
-                {
-                    string result = BitConverter.ToString(ffs.font_coord[i].font_data) + " " + BitConverter.ToString(ffs.font_coord[i].texture_data) + " "
-                    + BitConverter.ToString(ffs.font_coord[i].symbol) + " " + BitConverter.ToString(ffs.font_coord[i].x_start) + " " + BitConverter.ToString(ffs.font_coord[i].y_start) +
-                    " " + BitConverter.ToString(ffs.font_coord[i].coord_width) + " " + BitConverter.ToString(ffs.font_coord[i].coord_height) + " "
-                    + BitConverter.ToString(ffs.font_coord[i].x_advanced) + "\r\n";
-                    sw.Write(result);
-                }
-                    sw.Close();*/
-
-
+                    
 
                     filltextable();
                     fillcoordtable(0);
                     edited = false;
                     dataGridTextures.Enabled = true;
+
                     if (count_fonts > 1)
                     {
                         comboBox1.Enabled = true;
@@ -1709,28 +1470,7 @@ namespace DoctorWhoToolsWorking
                     {
                         comboBox1.Enabled = false;
                     }
-                    if (dds_count > 1)
-                    {
-                        importMultyLitteraFontGeneratorXMLtypefntToolStripMenuItem.Enabled = false;
-                        importMultiFontGeneratorXMLtypefntExperimentalToolStripMenuItem.Enabled = false;
-                    }
-                    else
-                    {
-                        importMultyLitteraFontGeneratorXMLtypefntToolStripMenuItem.Enabled = true;
-                        importMultiFontGeneratorXMLtypefntExperimentalToolStripMenuItem.Enabled = true;
-                    }
                 }
-            }
-        }
-
-        private void openFontToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            
-            OpenFont.Filter = "dat-file (*.dat) | *.dat";
-
-            if (OpenFont.ShowDialog() == DialogResult.OK)
-            {
-                
             }
         }
 
@@ -1953,22 +1693,7 @@ namespace DoctorWhoToolsWorking
                 ffs.texture[num_dds].tex_length = new byte[4];
                 ffs.texture[num_dds].tex_length = BitConverter.GetBytes(ffs.texture[num_dds].dds_content.Length);
 
-                /*for (int i = 0; i < BitConverter.ToInt32(ffs.links_count, 0); i++)
-                {
-                    if (num_dds == BitConverter.ToInt32(ffs.tex_head[i].tex_num, 0))
-                    {
-                        ffs.tex_head[i].x_start = new byte[4];
-                        ffs.tex_head[i].x_start = BitConverter.GetBytes(0);
-                        ffs.tex_head[i].y_start = new byte[4];
-                        ffs.tex_head[i].y_start = BitConverter.GetBytes(0);
-                        ffs.tex_head[i].x_end = new byte[4];
-                        ffs.tex_head[i].x_end = BitConverter.GetBytes(BitConverter.ToSingle(ffs.texture[num_dds].dds_width, 0) / BitConverter.ToSingle(ffs.texture[num_dds].dds_width, 0));
-                        ffs.tex_head[i].y_end = new byte[4];
-                        ffs.tex_head[i].y_end = BitConverter.GetBytes(BitConverter.ToSingle(ffs.texture[num_dds].dds_height, 0) / BitConverter.ToSingle(ffs.texture[num_dds].dds_height, 0));
-                    }
-                }*/
-
-                    filltextable();
+                filltextable();
                 edited = true;
             }
         }
@@ -1992,49 +1717,10 @@ namespace DoctorWhoToolsWorking
             edited = false;
         }
 
-        private void exportCoordinatesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SaveFileDialog sf = new SaveFileDialog();
-            if (sf.ShowDialog() == DialogResult.OK)
-            {
-                using (FileStream temp_shit = new FileStream(sf.FileName, FileMode.Create))
-                {
-                    
-                    int offset = 0;
-                    for (int i = 0; i < dataGridView1.RowCount; i++)
-                    {
-                        byte[] nil = new byte[3];
-                        byte[] nil3 = new byte[3];
-                        byte[] nil2 = new byte[4];
-                        nil = UnicodeEncoding.Unicode.GetBytes(dataGridView1[0, i].Value.ToString());
-                        //MessageBox.Show(BitConverter.ToString(nil));
-                        temp_shit.Write(nil, offset, nil.Length);
-                        //offset += 2;
-                        
-                        nil3 = UnicodeEncoding.Unicode.GetBytes(dataGridView1[1, i].Value.ToString());
-                        temp_shit.Write(nil3, offset, nil3.Length);
-                        //offset += 2;
-                        
-                        nil2 = BitConverter.GetBytes(Convert.ToInt32(dataGridView1[2, i].Value));
-                        //MessageBox.Show(BitConverter.ToString(nil2));
-                        temp_shit.Write(nil2, offset, nil2.Length);
-                        //offset += 4;
-                    }
-                }
-            }
-        }
-
-
-
         private void comboBox1_SelectionChangeCommitted(object sender, EventArgs e)
         {
             int selectedFont = comboBox1.SelectedIndex;
             fillcoordtable(selectedFont);
-        }
-
-        private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        {
-
         }
 
 
@@ -2739,738 +2425,6 @@ namespace DoctorWhoToolsWorking
             }
         }
 
-        private void importCoordinateFromShoeBoxfntToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "FNT-files (*.fnt) | *.fnt";
-
-            //ffs.tex_head[0].x_start;
-
-            if (ofd.ShowDialog() == DialogResult.OK)
-            {
-                string[] file_strings = File.ReadAllLines(ofd.FileName);
-                bool has_kernings = false;
-
-                int sel_font = comboBox1.SelectedIndex;
-                if (sel_font == -1) sel_font = 0;
-                int x_right = 0;
-                int x_left = 0;
-                int y_up = 0;
-                int y_down = 0;
-                int common_height = 0;
-                int dds_num = dataGridTextures.SelectedCells[0].RowIndex;
-                int kpc = 0; //kerning pair counter
-
-                for (int i = 0; i < file_strings.Length; i++)
-                {
-                    if (file_strings[i].IndexOf("padding=") > 0)
-                    {
-                        string[] splitted = file_strings[i].Split(new char[] { ' ', '=', '\"', ',' });
-
-                        x_right = Convert.ToInt32(splitted[splitted.Length - 5]);
-                        x_left = Convert.ToInt32(splitted[splitted.Length - 5]);
-                        y_up = Convert.ToInt32(splitted[splitted.Length - 5]);
-                        y_down = Convert.ToInt32(splitted[splitted.Length - 5]);
-                    }
-                    else if (file_strings[i].IndexOf("lineHeight=") > 0)
-                    {
-                        string[] splitted = file_strings[i].Split(new char[] { ' ', '=', ',', '\"' });
-
-                        common_height = Convert.ToInt32(splitted[3]);
-                    }
-                    else if ((file_strings[i].IndexOf("char id=") >= 0))
-                    {
-                        string pattern = @"\s+";
-                        string[] splitted = System.Text.RegularExpressions.Regex.Split(file_strings[i], pattern);//file_strings[i].Split(' ');
-
-                        for (int j = 0; j < splitted.Length; j++)
-                        {
-                            if (splitted[j].IndexOf('=') > 0)
-                            {
-                                splitted[j] = splitted[j].Remove(0, splitted[j].IndexOf('=') + 2);
-                                splitted[j] = splitted[j].Remove(splitted[j].Length - 1, 1);
-                            }
-                        }
-
-                        int char_num = Convert.ToInt32(splitted[2]);
-                        char cur_char = (char)char_num;
-                        int x = Convert.ToInt32(splitted[3]);
-                        int y = Convert.ToInt32(splitted[4]);
-                        int width = Convert.ToInt32(splitted[5]);
-                        int height = Convert.ToInt32(splitted[6]);
-                        int x_offset = x_left + x_right + Convert.ToInt32(splitted[7]);
-                        int y_offset = common_height - (y_down + y_up) - Convert.ToInt32(splitted[8]);
-                        int x_advanced = Convert.ToInt32(splitted[9]);
-                        splitted[11] = splitted[11].Remove(0, 1);
-                        splitted[11] = splitted[11].Remove(splitted[11].Length - 1, 1);
-                        int visible = Convert.ToInt32(splitted[11]);
-
-                        int k = -1;
-
-
-                        for (int j = 0; j < dataGridCoord.RowCount; j++)
-                        {
-                            string data_char = dataGridCoord[1, j].Value.ToString();
-
-                            if ((cur_char == data_char[0]) && (data_char[1] == '\0')) k = j;
-                        }
-
-                        if (k > -1)
-                        {
-                            dataGridCoord[2, k].Value = x;
-                            dataGridCoord[3, k].Value = x + width;
-                            dataGridCoord[4, k].Value = y;
-                            dataGridCoord[5, k].Value = y + height;
-                            dataGridCoord[6, k].Value = width;
-                            dataGridCoord[7, k].Value = height;
-                            dataGridCoord[8, k].Value = dds_num;
-                            dataGridCoord[9, k].Value = x_offset;
-                            dataGridCoord[10, k].Value = x_advanced;
-                            dataGridCoord[11, k].Value = y_offset;
-                            dataGridCoord[12, k].Value = visible;
-
-                            for (int l = 0; l < dataGridCoord.ColumnCount; l++)
-                            {
-                                dataGridCoord[l, k].Style.BackColor = System.Drawing.Color.Cyan;
-                            }
-                        }
-                    }
-                    else if ((file_strings[i].IndexOf("kernings count=") >= 0))
-                    {
-                        string[] splitted = file_strings[i].Split('=');
-                        splitted[1] = splitted[1].Remove(0, 1);
-                        splitted[1] = splitted[1].Remove(splitted[1].Length - 2, 2);
-
-                        if (Convert.ToInt32(splitted[1]) > 0)
-                        {
-                            dataGridView1.RowCount = Convert.ToInt32(splitted[1]);
-                            ffs.font_head[sel_font].count_kernings = BitConverter.GetBytes(Convert.ToInt32(splitted[1]));
-
-                            has_kernings = true;
-                        }
-                        else has_kernings = false;
-                    }
-                    else if (file_strings[i].IndexOf("kerning first=") >= 0)
-                    {
-                        string pattern = @"\s+";
-                        string[] splitted = System.Text.RegularExpressions.Regex.Split(file_strings[i], pattern);
-
-                        for (int l = 0; l < splitted.Length; l++)
-                        {
-                            if (splitted[l].IndexOf('=') > 0)
-                            {
-                                splitted[l] = splitted[l].Remove(0, splitted[l].IndexOf('=') + 1);
-                                splitted[l] = splitted[l].Remove(0, 1);
-                                splitted[l] = splitted[l].Remove(splitted[l].Length - 1, 1);
-                            }
-                        }
-
-                        char first_char = (char)Convert.ToInt32(splitted[2]);
-                        char second_char = (char)Convert.ToInt32(splitted[3]);
-                        int amount = Convert.ToInt32(splitted[4]);
-
-                        dataGridView1[0, kpc].Value = first_char;
-                        dataGridView1[1, kpc].Value = second_char;
-                        dataGridView1[2, kpc].Value = amount;
-
-                        for (int k = 0; k < dataGridView1.ColumnCount; k++)
-                        {
-                            dataGridView1[k, kpc].Style.BackColor = System.Drawing.Color.DarkCyan;
-                        }
-
-                        kpc++;
-                    }
-                }
-
-                for (int i = 0; i < BitConverter.ToInt32(ffs.links_count, 0); i++)
-                {
-                    if (BitConverter.ToInt32(ffs.tex_head[i].tex_num, 0) == dds_num)
-                    {
-                        ffs.tex_head[i].x_start = new byte[4];
-                        ffs.tex_head[i].x_start = BitConverter.GetBytes(0);
-                        ffs.tex_head[i].y_start = new byte[4];
-                        ffs.tex_head[i].y_start = BitConverter.GetBytes(0);
-                        ffs.tex_head[i].x_end = new byte[4];
-                        ffs.tex_head[i].x_end = BitConverter.GetBytes(BitConverter.ToSingle(ffs.texture[dds_num].dds_width, 0) / BitConverter.ToSingle(ffs.texture[dds_num].dds_width, 0));
-                        ffs.tex_head[i].y_end = new byte[4];
-                        ffs.tex_head[i].y_end = BitConverter.GetBytes(BitConverter.ToSingle(ffs.texture[dds_num].dds_height, 0) / BitConverter.ToSingle(ffs.texture[dds_num].dds_height, 0));
-                    }
-                }
-
-                int ci = 0;
-                for (int remake = 0; remake < ffs.font_coord.Count(); remake++)
-                {
-                    if (sel_font == ffs.font_coord[remake].index)
-                    {
-                        if (ffs.texture.Count > 1)
-                        {
-                            for (int i = 0; i < BitConverter.ToInt32(ffs.links_count, 0); i++)
-                            {
-                                if (BitConverter.ToInt32(ffs.tex_head[i].tex_num, 0) == Convert.ToInt32(dataGridCoord[8, ci].Value))
-                                {
-                                    ffs.font_coord[remake].texture_data = new byte[4];
-                                    Array.Copy(ffs.tex_head[i].tex_data, 0, ffs.font_coord[remake].texture_data, 0, 4);
-                                    break;
-                                }
-                            }
-                        }
-
-                        ffs.font_coord[remake].symbol = new byte[2];
-                        ffs.font_coord[remake].symbol = UnicodeEncoding.Unicode.GetBytes(dataGridCoord[1, ci].Value.ToString());
-                        ffs.font_coord[remake].x_start = new byte[2];
-                        ffs.font_coord[remake].x_start = BitConverter.GetBytes(Convert.ToInt16(dataGridCoord[2, ci].Value));
-                        ffs.font_coord[remake].y_start = new byte[2];
-                        ffs.font_coord[remake].y_start = BitConverter.GetBytes(Convert.ToInt16(dataGridCoord[4, ci].Value));
-                        ffs.font_coord[remake].coord_width = new byte[2];
-                        ffs.font_coord[remake].coord_width = BitConverter.GetBytes(Convert.ToInt16(dataGridCoord[6, ci].Value));
-                        ffs.font_coord[remake].coord_height = new byte[2];
-                        ffs.font_coord[remake].coord_height = BitConverter.GetBytes(Convert.ToInt16(dataGridCoord[7, ci].Value));
-                        ffs.font_coord[remake].x_offset = new byte[2];
-                        ffs.font_coord[remake].x_offset = BitConverter.GetBytes(Convert.ToInt16(dataGridCoord[9, ci].Value));
-                        ffs.font_coord[remake].x_advanced = new byte[2];
-                        ffs.font_coord[remake].x_advanced = BitConverter.GetBytes(Convert.ToInt16(dataGridCoord[10, ci].Value));
-                        ffs.font_coord[remake].y_offset = new byte[2];
-                        ffs.font_coord[remake].y_offset = BitConverter.GetBytes(Convert.ToInt16(dataGridCoord[11, ci].Value));
-                        ffs.font_coord[remake].last_unknown_data = new byte[4];
-                        ffs.font_coord[remake].last_unknown_data = BitConverter.GetBytes(Convert.ToInt32(dataGridCoord[12, ci].Value));
-                        ffs.font_coord[remake].new_coordinates = true;
-                        ci++;
-                    }
-                }
-
-                if (has_kernings == false)
-                {
-                    for (int j = 0; j < ffs.font_kern.Count; j++)
-                    {
-                        if (ffs.font_kern[j].kern_index == sel_font)
-                        {
-                            byte[] nil = new byte[2];
-                            byte[] nil2 = new byte[4];
-                            ffs.kern_add(nil, nil, nil2, sel_font, true, ffs.font_head[sel_font].fonts_data);
-
-
-                            ffs.font_kern[ffs.font_kern.Count - 1].first_char = new byte[2];
-                            ffs.font_kern[ffs.font_kern.Count - 1].first_char = UnicodeEncoding.Unicode.GetBytes(dataGridView1[0, 0].Value.ToString());
-                            ffs.font_kern[ffs.font_kern.Count - 1].second_char = new byte[2];
-                            ffs.font_kern[ffs.font_kern.Count - 1].second_char = UnicodeEncoding.Unicode.GetBytes(dataGridView1[1, 0].Value.ToString());
-                            ffs.font_kern[ffs.font_kern.Count - 1].amount = new byte[4];
-                            ffs.font_kern[ffs.font_kern.Count - 1].amount = BitConverter.GetBytes(Convert.ToInt32(dataGridView1[2, 0].Value));
-                            ffs.font_head[sel_font].count_kernings = new byte[2];
-                            ffs.font_head[sel_font].count_kernings = BitConverter.GetBytes(1);
-
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    for (int i = 0; i < dataGridView1.RowCount; i++)
-                    {
-                        byte[] nil = new byte[2];
-                        byte[] nil2 = new byte[4];
-                        ffs.kern_add(nil, nil, nil2, sel_font, true, ffs.font_head[sel_font].fonts_data);
-
-                        ffs.font_kern[ffs.font_kern.Count - 1].first_char = new byte[2];
-                        ffs.font_kern[ffs.font_kern.Count - 1].first_char = UnicodeEncoding.Unicode.GetBytes(dataGridView1[0, i].Value.ToString());
-                        ffs.font_kern[ffs.font_kern.Count - 1].second_char = new byte[2];
-                        ffs.font_kern[ffs.font_kern.Count - 1].second_char = UnicodeEncoding.Unicode.GetBytes(dataGridView1[1, i].Value.ToString());
-                        ffs.font_kern[ffs.font_kern.Count - 1].amount = new byte[4];
-                        ffs.font_kern[ffs.font_kern.Count - 1].amount = BitConverter.GetBytes(Convert.ToInt32(dataGridView1[2, i].Value));
-                    }
-
-                    has_kernings = false;
-                }
-            }
-        }
-
-        private void importMultyLitteraFontGeneratorXMLtypefntToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            //Тут начинаются кошмары программистов идеалистов...
-
-            //ModFont mf = new ModFont();
-            //mf.Show();
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "FNT format (*.fnt) | *.fnt";
-
-            if (ofd.ShowDialog() == DialogResult.OK)
-            {
-                //Готовлю заранее нужные мне переменные (да, есть тут те, которые я тупо скопировал из других кнопок. Пришлось это тогда делать)
-                //Подготовил для работы с текстурой
-                int xStart = 0; 
-                int yStart = 0; 
-                int xEnd = 0; 
-                int yEnd = 0;
-                float xStartDiv = 0.0f; 
-                float yStartDiv = 0.0f;
-                float xEndDiv = 0.0f;
-                float yEndDiv = 0.0f;
-                int yCommutator = 0;
-                int ddswidth = BitConverter.ToInt32(ffs.texture[0].dds_width, 0);
-                int ddsheight = BitConverter.ToInt32(ffs.texture[0].dds_height, 0);
-
-                int dds_x = 0;
-                int dds_y = 0;
-
-                //Получаем информацию о количестве шрифтов
-                int font_count = BitConverter.ToInt32(ffs.font_count, 0);
-                int check_font_count = 0; //Готовим счётчик для проверки с количество шрифтов в fnt файле
-                int font_no = -1;
-                //padding
-                int x_right = 0; 
-                int x_left = 0;  
-                int y_up = 0;
-                int y_down = 0;
-                
-                int common_height = 0; //Готовится переменная для правильного вычисления смещения по оси Y (тут считается не как у теллтейлов)
-                int dds_num = dataGridTextures.SelectedCells[0].RowIndex; //Тестировал на шрифтах с 1 текстурой, так что потом с повожусь с несколькими шрифтами и текстурами
-                
-                //Заготовки для магических байтов в шрифтах и текстурах
-                int texIndex = 0; 
-                int dataIndex = 0;
-                int fontIndex = 0;
-
-                string[] par = File.ReadAllLines(ofd.FileName); //Считываю fnt-файл
-                
-                //Некоторые параметры для программы
-                bool has_coord_counter = false; //Проверка на наличие информации о количестве символов в fnt файле
-                                                //(да, бывало и такое, что в файле не указывалось количество символов и парных Кернингов)
-                bool has_kern_counter = false; //Проверка на наличие о количестве парного Кернинга
-                bool first_font = false; //Если найдётся информация о первом шрифте (возможно, от такого костыля избавлюсь, потому что у меня были другие планы по этому поводу)
-                int ch_count = 0; //Информация о количестве символов (пригодится при считывании fnt-файла)
-                int ker_count = 0; //Информация о количестве парного Кернинга
-
-                uint table_size = 12 + (32 * (uint)font_count) + 4; //Заранее подготовил смещение к таблице с символами
-                uint kern_off = table_size;
-
-                Font_Structure newffs = new Font_Structure(); //Готовлю новый класс, чтобы в нём 
-
-                for (int j = 0; j < par.Length; j++) //Прогоняю fnt-файл на наличие нужных параметров
-                {
-                    if (par[j].IndexOf('"') > 0 && (par[j].IndexOf("fontno=") > 0)) //Нашёл информацию о номере шрифта, плюсуем в счётчике
-                    {
-                        check_font_count++;
-                    }
-
-                    if (par[j].IndexOf("<chars count=") > 0) //Нашёл количество символов, меняем значение переменной на true
-                    {
-                        has_coord_counter = true;
-
-                        string[] splitted = par[j].Split(new char[] { ' ', '=', '\"', ',' });
-                        ch_count = Convert.ToInt32(splitted[5]); //Заодно считаем количество символов и подготавливаем к смещению для парного Кернинга
-
-                        kern_off += (uint)ch_count * 24;
-                    }
-                    
-                    if (par[j].IndexOf("<kernings count=") > 0) //То же самое (только зачем я считаю количество парных Кернингов тут?)
-                    {
-                        has_kern_counter = true;
-                        string[] splitted = par[j].Split(new char[] { ' ', '=', '\"', ',' });
-                        ker_count = Convert.ToInt32(splitted[5]);
-                    }
-                    else if (par[j].IndexOf("<kerning first=") > 0 && has_kern_counter == false) has_kern_counter = true; //И это зачем добавлял?
-                }
-
-                if (check_font_count == font_count)//Если количество шрифтов совпадает с проверенным fnt файлом, то работаем дальше
-                {
-                    ffs.font_kern.Clear(); //Удаляю список парного Кернинга
-                    
-                    //Сортировка текстур
-                    uint sym_off = 0;
-                    uint ker_off = 0;
-
-                    for (int i = 0; i < par.Length; i++) //Прогоняем заново считанные строки и выбираем нужные параметры
-                    {
-                        if (par[i].IndexOf('"') > 0 && (par[i].IndexOf("fontno=") > 0))
-                        {
-                            if (par[i].IndexOf("padding=") > 0) //Нашёл значение padding, готовим переменные (для правильного отступления друг от друга символов)
-                            {
-                                string[] splitted = par[i].Split(new char[] { ' ', '=', '\"', ',' });
-
-                                x_right = Convert.ToInt32(splitted[41]);
-                                x_left = Convert.ToInt32(splitted[43]);
-                                y_up = Convert.ToInt32(splitted[42]);
-                                y_down = Convert.ToInt32(splitted[44]);
-
-                                font_no = Convert.ToInt32(splitted[splitted.Length - 2]); //Узнаём номер шрифта.
-                                if (font_no == 1) first_font = true; //Если он первый, то ставим значение true.
-
-
-                                //byte[] tex_block = new byte[4];
-
-
-                                    for (int l = 0; l < ffs.tex_head.Count; l++)//Находим нужные для шрифта магические байты из старого списка
-                                    {
-                                        for (int k = 0; k < ffs.font_coord.Count(); k++)
-                                        {
-                                            if (ffs.font_coord[k].index == font_no && ffs.tex_head[l].font_num == ffs.font_coord[k].index)
-                                            {
-                                                //tex_block = ffs.font_coord[k].texture_data;
-                                                dataIndex = k;
-                                                texIndex = l;
-                                                break;
-                                            }
-                                        }
-                                    }
-
-
-                                    /*for (int j = 0; j < ffs.tex_head.Count(); j++)
-                                    {
-                                        if (BitConverter.ToString(ffs.tex_head[j].tex_data) == BitConverter.ToString(tex_block))
-                                        {
-                                            texIndex = j;
-                                            break;
-                                        }
-                                    }*/
-                            }
-                        }
-
-                        if ((par[i].IndexOf("lineHeight=") > 0))
-                        {
-                            string[] splitted = par[i].Split(new char[] { ' ', '=', ',', '\"' });
-
-                            int ind1 = 0, ind2 = 0, ind3 = 0;
-
-                            for (int j = 0; j < splitted.Count(); j++) //Готовим некоторые параметры для текстур (ширина и высота), а также для шрифта общую высоту
-                            {
-                                if (splitted[j] == "lineHeight" && splitted[j+1] == "")
-                                {
-                                    ind1 = j + 2;
-                                }
-                                else if (splitted[j] == "lineHeight" && splitted[j + 1] != "")
-                                {
-                                    ind1 = j + 1;
-                                }
-
-                                if (splitted[j] == "scaleW" && splitted[j + 1] == "")
-                                {
-                                    ind2 = j + 2;
-                                }
-                                else if (splitted[j] == "scaleW" && splitted[j + 1] != "")
-                                {
-                                    ind2 = j + 1;
-                                }
-
-                                if (splitted[j] == "scaleH" && splitted[j + 1] == "")
-                                {
-                                    ind3 = j + 2;
-                                }
-                                else if (splitted[j] == "scaleH" && splitted[j + 1] != "")
-                                {
-                                    ind3 = j + 1;
-                                }
-                            }
-
-                                common_height = Convert.ToInt32(splitted[ind1]);
-
-                            if (first_font) //Если это первый шрифт
-                            {
-                                //Идёт заготовка с самого начала для указания параметров в текстурах
-                                xEnd = Convert.ToInt32(splitted[ind2]);
-                                yEnd = Convert.ToInt32(splitted[ind3]);
-                                //yCommutator += yEnd;
-                                yCommutator = Convert.ToInt32(splitted[ind3]);
-
-                                xStartDiv = 0; //Предполагается, что первый шрифт будет вверху, поэтому поставил в начале 0
-                                yStartDiv = 0;
-                                xEndDiv = Convert.ToSingle(xEnd) / Convert.ToSingle(ddswidth);//Convert.ToSingle(xEnd) / Convert.ToSingle(ddswidth);
-                                yEndDiv = Convert.ToSingle(yEnd) / Convert.ToSingle(ddsheight);//Convert.ToSingle(yEnd) / Convert.ToSingle(ddsheight);
-                                //А тут идёт соотношение окончания ширины и высоты , взятых из fnt-файла на ширину и высоту текстуры
-
-                                //И всё записывается в эти переменные
-                                ffs.tex_head[texIndex].x_start = new byte[4];
-                                ffs.tex_head[texIndex].x_start = BitConverter.GetBytes(xStartDiv);//xStartDiv);
-                                ffs.tex_head[texIndex].y_start = new byte[4];
-                                ffs.tex_head[texIndex].y_start = BitConverter.GetBytes(yStartDiv);//yStartDiv);
-                                ffs.tex_head[texIndex].x_end = new byte[4];
-                                ffs.tex_head[texIndex].x_end = BitConverter.GetBytes(xEndDiv);//xEndDiv);
-                                ffs.tex_head[texIndex].y_end = new byte[4];
-                                ffs.tex_head[texIndex].y_end = BitConverter.GetBytes(yEndDiv);//yEndDiv);
-
-                                uint tablesize = (32 * (uint)font_count) + 16;
-                                sym_off = tablesize; //Готовится параметры для заголовка шрифтов
-
-                                ffs.font_head[font_no - 1].sym_offset = new byte[4];
-                                ffs.font_head[font_no - 1].sym_offset = BitConverter.GetBytes(sym_off);
-
-                                /*ffs.font_head[font_no].kern_offset = new byte[4];
-                                ffs.font_head[font_no].kern_offset = BitConverter.GetBytes(ker_off);*/
-
-                                first_font = false;
-                            }
-                            else //То же самое, только должны меняться начала и конец по оси Y
-                            {
-                                xStart = 0;
-                                yStart = yCommutator;
-                                xEnd = Convert.ToInt32(splitted[ind2]);
-                                yEnd = Convert.ToInt32(splitted[ind3]) + yStart;
-                                yCommutator = yEnd;
-
-                                dds_x = Convert.ToInt32(splitted[ind2]);
-                                dds_y = Convert.ToInt32(splitted[ind3]);
-
-                                ffs.font_head[font_no - 1].sym_offset = new byte[4];
-                                ffs.font_head[font_no - 1].sym_offset = BitConverter.GetBytes(sym_off);
-
-                                /*ffs.font_head[font_no].kern_offset = new byte[4];
-                                ffs.font_head[font_no].kern_offset = BitConverter.GetBytes(ker_off);*/
-
-                                xStartDiv = Convert.ToSingle(xStart) / Convert.ToSingle(ddswidth);
-                                yStartDiv = Convert.ToSingle(yStart) / Convert.ToSingle(ddsheight);
-                                xEndDiv = Convert.ToSingle(xEnd) / Convert.ToSingle(ddswidth);//Convert.ToSingle(xEnd) / Convert.ToSingle(ddswidth);
-                                yEndDiv = Convert.ToSingle(yEnd) / Convert.ToSingle(ddsheight);//Convert.ToSingle(yEnd) / Convert.ToSingle(ddsheight);
-
-                                ffs.tex_head[texIndex].x_start = new byte[4];
-                                ffs.tex_head[texIndex].x_start = BitConverter.GetBytes(xStartDiv);//xStartDiv);
-                                ffs.tex_head[texIndex].y_start = new byte[4];
-                                ffs.tex_head[texIndex].y_start = BitConverter.GetBytes(yStartDiv);//yStartDiv);
-                                ffs.tex_head[texIndex].x_end = new byte[4];
-                                ffs.tex_head[texIndex].x_end = BitConverter.GetBytes(xEndDiv);//xEndDiv);
-                                ffs.tex_head[texIndex].y_end = new byte[4];
-                                ffs.tex_head[texIndex].y_end = BitConverter.GetBytes(yEndDiv);//yEndDiv);
-                            }
-                        }
-
-                        if (par[i].IndexOf("<chars count=") > 0) //Считываем количество символов и записываем в наш список
-                        {
-                            string[] splitted = par[i].Split(new char[] { ' ', '=', '\"', ',' });
-                            ch_count = Convert.ToInt32(splitted[5]);
-
-                            ffs.font_head[ffs.font_coord[dataIndex].index - 1].count_symbols = new byte[2];
-                            ffs.font_head[ffs.font_coord[dataIndex].index - 1].count_symbols = BitConverter.GetBytes(ch_count);
-                            ffs.font_head[ffs.font_coord[dataIndex].index - 1].count_kernings = BitConverter.GetBytes(0);
-                            ffs.font_head[ffs.font_coord[dataIndex].index - 1].kern_offset = BitConverter.GetBytes(kern_off);
-                        }
-
-                        if (par[i].IndexOf("<char id=") > 0) //Ну а тут просто читаем координаты и записываем в новый список координат
-                        {
-                            string[] splitted = par[i].Split(new char[] { ' ', '=', '\"', ',' });
-
-                            int char_id = Convert.ToInt32(splitted[7]);
-                            //char ch = (char)char_id;
-                            //string s = ch.ToString() + "\0";
-                            int x = Convert.ToInt32(splitted[11]);// +x_dds;
-                            int y = Convert.ToInt32(splitted[15]);// +dds_y;
-                            int width = Convert.ToInt32(splitted[19]);
-                            int height = Convert.ToInt32(splitted[23]);
-                            int x_offset = (x_left + x_right) + Convert.ToInt32(splitted[27]);
-                            int x_advanced = Convert.ToInt32(splitted[35]);
-                            int y_offset = common_height - (y_down + y_up) - Convert.ToInt32(splitted[31]);
-                            int chnl = Convert.ToInt32(splitted[43]);
-                            int index = font_no;
-                            int visible = 0;
-                            bool Edited = true;
-
-                            if (chnl == 15) visible = 1;
-
-                            byte[] bChar = new byte[2];
-                            bChar = BitConverter.GetBytes(char_id);//UnicodeEncoding.GetEncoding(MainForm.settings.WINcoding).GetBytes(s);
-
-                            byte[] bX = new byte[2];
-                            bX = BitConverter.GetBytes(x);
-                            byte[] bY = new byte[2];
-                            bY = BitConverter.GetBytes(y);
-                            byte[] bWidth = new byte[2];
-                            bWidth = BitConverter.GetBytes(width);
-                            byte[] bHeight = new byte[2];
-                            bHeight = BitConverter.GetBytes(height);
-                            byte[] bXoffset = new byte[2];
-                            bXoffset = BitConverter.GetBytes(x_offset);
-                            byte[] bXadvanced = new byte[2];
-                            bXadvanced = BitConverter.GetBytes(x_advanced);
-                            byte[] bYoffset = new byte[2];
-                            bYoffset = BitConverter.GetBytes(y_offset);
-                            byte[] bVisible = new byte[2];
-                            bVisible = BitConverter.GetBytes(visible);
-
-                            byte[] nil = new byte[2];
-                            newffs.coord_add(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, index, Edited, nil);
-
-                            newffs.font_coord[newffs.font_coord.Count - 1].symbol = new byte[2];
-                            Array.Copy(bChar, 0, newffs.font_coord[newffs.font_coord.Count - 1].symbol, 0, newffs.font_coord[newffs.font_coord.Count - 1].symbol.Length);
-                            
-                            newffs.font_coord[newffs.font_coord.Count - 1].x_start = new byte[2];
-                            Array.Copy(bX, 0, newffs.font_coord[newffs.font_coord.Count - 1].x_start, 0, newffs.font_coord[newffs.font_coord.Count - 1].x_start.Length);
-
-                            newffs.font_coord[newffs.font_coord.Count - 1].y_start = new byte[2];
-                            Array.Copy(bY, 0, newffs.font_coord[newffs.font_coord.Count - 1].y_start, 0, newffs.font_coord[newffs.font_coord.Count - 1].y_start.Length);
-                            
-                            newffs.font_coord[newffs.font_coord.Count - 1].coord_width = new byte[2];
-                            Array.Copy(bWidth, 0, newffs.font_coord[newffs.font_coord.Count - 1].coord_width, 0, newffs.font_coord[newffs.font_coord.Count - 1].coord_width.Length);
-                            
-                            newffs.font_coord[newffs.font_coord.Count - 1].coord_height = new byte[2];
-                            Array.Copy(bHeight, 0, newffs.font_coord[newffs.font_coord.Count - 1].coord_height, 0, newffs.font_coord[newffs.font_coord.Count - 1].coord_height.Length);
-                            
-                            newffs.font_coord[newffs.font_coord.Count - 1].x_advanced = new byte[2];
-                            Array.Copy(bXadvanced, 0, newffs.font_coord[newffs.font_coord.Count - 1].x_advanced, 0, newffs.font_coord[newffs.font_coord.Count - 1].x_advanced.Length);
-                            
-                            newffs.font_coord[newffs.font_coord.Count - 1].x_offset = new byte[2];
-                            Array.Copy(bXoffset, 0, newffs.font_coord[newffs.font_coord.Count - 1].x_offset, 0, newffs.font_coord[newffs.font_coord.Count - 1].x_offset.Length);
-                            
-                            newffs.font_coord[newffs.font_coord.Count - 1].y_offset = new byte[2];
-                            Array.Copy(bYoffset, 0, newffs.font_coord[newffs.font_coord.Count - 1].y_offset, 0, newffs.font_coord[newffs.font_coord.Count - 1].y_offset.Length);
-                            
-                            newffs.font_coord[newffs.font_coord.Count - 1].last_unknown_data = new byte[4];
-                            Array.Copy(bVisible, 0, newffs.font_coord[newffs.font_coord.Count - 1].last_unknown_data, 0, newffs.font_coord[newffs.font_coord.Count - 1].last_unknown_data.Length);
-                            
-                            newffs.font_coord[newffs.font_coord.Count - 1].texture_data = new byte[4];
-                            Array.Copy(ffs.tex_head[texIndex].tex_data, 0, newffs.font_coord[newffs.font_coord.Count - 1].texture_data, 0, newffs.font_coord[newffs.font_coord.Count - 1].texture_data.Length);
-                            
-                            newffs.font_coord[newffs.font_coord.Count - 1].font_data = new byte[4];
-                            Array.Copy(ffs.font_head[fontIndex].fonts_data, 0, newffs.font_coord[newffs.font_coord.Count - 1].font_data, 0, ffs.font_head[ffs.tex_head[fontIndex].font_num - 1].fonts_data.Length);
-
-
-                            sym_off += 24;
-                        }
-
-                        if (par[i].IndexOf("<kernings count=") > 0) //То же самое и с Кернингом
-                        {
-                            string[] splitted = par[i].Split(new char[] { ' ', '=', '\"', ',' });
-                            ker_count = Convert.ToInt32(splitted[5]);
-                            
-                            ffs.font_head[font_no - 1].count_kernings = new byte[2];
-                            ffs.font_head[font_no - 1].count_kernings = BitConverter.GetBytes(ker_count);
-                            ffs.font_head[font_no - 1].kern_offset = new byte[2];
-                            ffs.font_head[font_no - 1].kern_offset = BitConverter.GetBytes(kern_off);
-                            kern_off += (uint)ker_count * 8;
-                        }
-
-                        if (par[i].IndexOf("<kerning first=") > 0)
-                        {
-                            string[] splitted = par[i].Split(new char[] { ' ', '=', '\"', ',' });
-
-                            int f_char_id = Convert.ToInt32(splitted[7]);
-                            int s_char_id = Convert.ToInt32(splitted[11]);
-                            int amount = Convert.ToInt32(splitted[15]);
-
-                            char f_ch = (char)f_char_id;
-                            char s_ch = (char)s_char_id;
-
-                            //string f_s = f_ch.ToString() + "\0";
-                            //string s_s = s_ch.ToString() + "\0";
-
-                            int index = font_no;
-
-                            byte[] b_f_Char = new byte[2];
-                            b_f_Char = BitConverter.GetBytes(f_char_id);//UnicodeEncoding.GetEncoding(MainForm.settings.WINcoding).GetBytes(f_s);
-                            byte[] b_s_Char = new byte[2];
-                            b_s_Char = BitConverter.GetBytes(s_char_id);//UnicodeEncoding.GetEncoding(MainForm.settings.WINcoding).GetBytes(s_s);
-                            byte[] b_amount = new byte[4];
-                            b_amount = BitConverter.GetBytes(amount);
-
-
-                            byte[] nil = new byte[2];
-                            byte[] nil2 = new byte[4];
-                            newffs.kern_add(nil, nil, nil2, index, true, nil2);
-
-                            newffs.font_kern[newffs.font_kern.Count - 1].first_char = new byte[2];
-                            Array.Copy(b_f_Char, 0, newffs.font_kern[newffs.font_kern.Count - 1].first_char, 0, newffs.font_kern[newffs.font_kern.Count - 1].first_char.Length);
-                            
-                            newffs.font_kern[newffs.font_kern.Count - 1].second_char = new byte[2];
-                            Array.Copy(b_s_Char, 0, newffs.font_kern[newffs.font_kern.Count - 1].second_char, 0, newffs.font_kern[newffs.font_kern.Count - 1].second_char.Length);
-                            
-                            newffs.font_kern[newffs.font_kern.Count - 1].amount = new byte[4];
-                            Array.Copy(b_amount, 0, newffs.font_kern[newffs.font_kern.Count - 1].amount, 0, newffs.font_kern[newffs.font_kern.Count - 1].amount.Length);
-
-                            newffs.font_kern[newffs.font_kern.Count - 1].font_data = new byte[4];
-                            Array.Copy(ffs.font_head[ffs.font_coord[fontIndex].index - 1].fonts_data, 0, newffs.font_kern[newffs.font_kern.Count - 1].font_data, 0, ffs.font_head[ffs.font_coord[fontIndex].index - 1].fonts_data.Length);
-
-
-                            ker_off += 8;
-                        }
-                    }
-
-                    /*for (int j = 0; j < ffs.font_head.Count; j++)
-                    {
-                        uint kern_off = BitConverter.ToUInt32(ffs.font_head[j].kern_offset, 0);
-                        kern_off += sym_off;
-
-                        ffs.font_head[j].kern_offset = new byte[4];
-                        ffs.font_head[j].kern_offset = BitConverter.GetBytes(kern_off);
-                    }*/
-
-
-                        for (int k = 0; k < newffs.font_coord.Count; k++) //Вот тут весь смак. После записи нужных данных, идёт сортировка
-                        {
-                            for (int m = k - 1; m >= 0; m--)
-                            {
-                                //Прогоняем и проверяем на наименьший код символа, смещая его в начало, и чтобы он был из нужного шрифта
-                                if(BitConverter.ToInt16(newffs.font_coord[m].symbol, 0) >
-                                    BitConverter.ToInt16(newffs.font_coord[m + 1].symbol, 0)
-                                    && newffs.font_coord[m].index - 1 == newffs.font_coord[m + 1].index - 1) //.index и есть номер шрифта
-                                {
-                                    byte[] temp_texture_data = newffs.font_coord[m].texture_data;
-                                    byte[] temp_symbol = newffs.font_coord[m].symbol;
-                                    byte[] temp_x_start = newffs.font_coord[m].x_start;
-                                    byte[] temp_y_start = newffs.font_coord[m].y_start;
-                                    byte[] temp_coord_width = newffs.font_coord[m].coord_width;
-                                    byte[] temp_coord_height = newffs.font_coord[m].coord_height;
-                                    byte[] temp_x_advanced = newffs.font_coord[m].x_advanced;
-                                    byte[] temp_x_offset = newffs.font_coord[m].x_offset;
-                                    byte[] temp_y_offset = newffs.font_coord[m].y_offset;
-                                    byte[] temp_last_unknown_data = newffs.font_coord[m].last_unknown_data;
-                                    int temp_index = newffs.font_coord[m].index;
-                                    byte[] temp_font_data = newffs.font_coord[m].font_data;
-                                    bool temp_new_coordinates = newffs.font_coord[m].new_coordinates;
-
-                                    newffs.font_coord[m].texture_data = newffs.font_coord[m + 1].texture_data;
-                                    newffs.font_coord[m].symbol = newffs.font_coord[m + 1].symbol;
-                                    newffs.font_coord[m].x_start = newffs.font_coord[m + 1].x_start;
-                                    newffs.font_coord[m].y_start = newffs.font_coord[m + 1].y_start;
-                                    newffs.font_coord[m].coord_width = newffs.font_coord[m + 1].coord_width;
-                                    newffs.font_coord[m].coord_height = newffs.font_coord[m + 1].coord_height;
-                                    newffs.font_coord[m].x_advanced = newffs.font_coord[m + 1].x_advanced;
-                                    newffs.font_coord[m].x_offset = newffs.font_coord[m + 1].x_offset;
-                                    newffs.font_coord[m].y_offset = newffs.font_coord[m + 1].y_offset;
-                                    newffs.font_coord[m].last_unknown_data = newffs.font_coord[m + 1].last_unknown_data;
-                                    newffs.font_coord[m].index = newffs.font_coord[m + 1].index;
-                                    newffs.font_coord[m].font_data = newffs.font_coord[m + 1].font_data;
-                                    newffs.font_coord[m].new_coordinates = newffs.font_coord[m + 1].new_coordinates;
-
-                                    newffs.font_coord[m + 1].texture_data = temp_texture_data;
-                                    newffs.font_coord[m + 1].symbol = temp_symbol;
-                                    newffs.font_coord[m + 1].x_start = temp_x_start;
-                                    newffs.font_coord[m + 1].y_start = temp_y_start;
-                                    newffs.font_coord[m + 1].coord_width = temp_coord_width;
-                                    newffs.font_coord[m + 1].coord_height = temp_coord_height;
-                                    newffs.font_coord[m + 1].x_advanced = temp_x_advanced;
-                                    newffs.font_coord[m + 1].x_offset = temp_x_offset;
-                                    newffs.font_coord[m + 1].y_offset = temp_y_offset;
-                                    newffs.font_coord[m + 1].last_unknown_data = temp_last_unknown_data;
-                                    newffs.font_coord[m + 1].index = temp_index;
-                                    newffs.font_coord[m + 1].font_data = temp_font_data;
-                                    newffs.font_coord[m + 1].new_coordinates = temp_new_coordinates;
-                                }
-                        }
-                    }
-
-                        //Далее из нового класса копируем в нужные места параметры
-                        for (int i = 0; i < newffs.tex_head.Count; i++)
-                        {
-                            for (int j = newffs.tex_head.Count - i - 1; j >= 0; j--)
-                            {
-                                if (BitConverter.ToString(ffs.tex_head[j].tex_data) == BitConverter.ToString(newffs.tex_head[i].tex_data))
-                                {
-                                    ffs.tex_head[j].x_start = newffs.tex_head[i].x_start;
-                                    ffs.tex_head[j].y_start = newffs.tex_head[i].x_start;
-                                    ffs.tex_head[j].x_end = newffs.tex_head[i].x_end;
-                                    ffs.tex_head[j].y_end = newffs.tex_head[i].y_end;
-                                    ffs.tex_head[j].tex_num = newffs.tex_head[i].tex_num;
-                                    ffs.tex_head[j].tex_data = newffs.tex_head[i].tex_data;
-                                }
-                            }
-                        }
-
-                    ffs.font_coord = newffs.font_coord; //Заменяем старые координаты на новые
-                    ffs.font_kern = newffs.font_kern; //То же самое с Кернингом
-                    fillcoordtable(0); //Обновляем таблицу координат
-                    edited = true; 
-                    //В следующих кнопках мелкие отличия: пытался облегчить муки, чтобы не лазить каждый раз в фотошоп, склеивая тупо DDS-ки,
-                                                        //пытался из-за одной проги сделать общий формат, чтобы в случае чего удалялись XML-структуры
-                                                        //и всё, вроде. Но суть оставалась почти одна и та же.
-                }
-            }
-        }
-
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
@@ -3577,7 +2531,6 @@ namespace DoctorWhoToolsWorking
                 int y_spacing = 0;
                 int common_height = 0;
                 int dds_num = dataGridTextures.SelectedCells[0].RowIndex;
-                int kpc = 0; //kerning pair counter
                 int texIndex = 0;
                 int dataIndex = 0;
                 int fontIndex = 0;
@@ -3600,7 +2553,7 @@ namespace DoctorWhoToolsWorking
                 Font_Structure newffs = new Font_Structure();
 
 
-                for (int n = 0; n < par.Length; n++) //Убираем дебильные кавычки и скобки от xml файла
+                for (int n = 0; n < par.Length; n++)
                 {
                     if ((par[n].IndexOf('<') >= 0) || (par[n].IndexOf('<') >= 0 && par[n].IndexOf('/') > 0))
                     {
@@ -3813,16 +2766,6 @@ namespace DoctorWhoToolsWorking
                                         }
                                     }
                                 }
-
-
-                                /*for (int j = 0; j < ffs.tex_head.Count(); j++)
-                                {
-                                    if (BitConverter.ToString(ffs.tex_head[j].tex_data) == BitConverter.ToString(tex_block))
-                                    {
-                                        texIndex = j;
-                                        break;
-                                    }
-                                }*/
                             }
                         }
 
@@ -4162,1195 +3105,6 @@ namespace DoctorWhoToolsWorking
             }
         }
 
-        private void importMultiFontGeneratorXMLtypefntExperimentalToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            //Тут начинаются кошмары программистов идеалистов...
-
-            //ModFont mf = new ModFont();
-            //mf.Show();
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "FNT format (*.fnt) | *.fnt";
-
-            if (ofd.ShowDialog() == DialogResult.OK)
-            {
-                int xStart = 0;
-                int yStart = 0;
-                int xEnd = 0;
-                int yEnd = 0;
-                float xStartDiv = 0.0f;
-                float yStartDiv = 0.0f;
-                float xEndDiv = 0.0f;
-                float yEndDiv = 0.0f;
-                int yCommutator = 0;
-                int ddswidth = BitConverter.ToInt32(ffs.texture[0].dds_width, 0);
-                int ddsheight = BitConverter.ToInt32(ffs.texture[0].dds_height, 0);
-
-                int dds_x = 0;
-                int dds_y = 0;
-
-                int sel_font = comboBox1.SelectedIndex;
-                if (sel_font == -1) sel_font = 0;
-
-                int font_count = BitConverter.ToInt32(ffs.font_count, 0);
-                int check_font_count = 0;
-                int font_no = -1;
-                int x_right = 0;
-                int x_left = 0;
-                int y_up = 0;
-                int y_down = 0;
-                int common_height = 0;
-                int dds_num = dataGridTextures.SelectedCells[0].RowIndex;
-                int kpc = 0; //kerning pair counter
-                int texIndex = 0;
-                int dataIndex = 0;
-                int fontIndex = 0;
-
-                ffs.font_kern.Clear();
-
-                string[] par = File.ReadAllLines(ofd.FileName);
-                bool has_coord_counter = false;
-                bool has_kern_counter = false;
-                bool first_font = false;
-                int ch_count = 0;
-                int ker_count = 0;
-
-                byte[] TextureFile = null;
-                int TextureSize = 0;
-
-                uint table_size = 12 + (32 * (uint)font_count) + 4;
-                uint kern_off = table_size;
-
-                Font_Structure newffs = new Font_Structure();
-
-                for (int j = 0; j < par.Length; j++)
-                {
-                    if (par[j].IndexOf('"') > 0 && (par[j].IndexOf("fontno=") > 0))
-                    {
-                        check_font_count++;
-                    }
-
-                    if (par[j].IndexOf("<chars count=") > 0)
-                    {
-                        has_coord_counter = true;
-
-                        string[] splitted = par[j].Split(new char[] { ' ', '=', '\"', ',' });
-                        ch_count = Convert.ToInt32(splitted[5]);
-
-                        kern_off += (uint)ch_count * 24;
-                    }
-
-                    if (par[j].IndexOf("<kernings count=") > 0)
-                    {
-                        has_kern_counter = true;
-                        string[] splitted = par[j].Split(new char[] { ' ', '=', '\"', ',' });
-                        ker_count = Convert.ToInt32(splitted[5]);
-                    }
-                    else if (par[j].IndexOf("<kerning first=") > 0 && has_kern_counter == false) has_kern_counter = true;
-                }
-
-                if (check_font_count == font_count)
-                {
-                    //Сортировка текстур
-
-                    FileInfo fi = new FileInfo(ofd.FileName);
-                    string FilesPath = fi.DirectoryName;
-
-                    for (int j = 0; j < par.Length; j++)
-                    {
-                        if (par[j].IndexOf("page id=") > 0 && par[j].IndexOf("file=") > 0)
-                        {
-                            string[] spiltted = par[j].Split(new char[] { ' ', '=', '\"', ',' });
-
-                            string GetFilename = spiltted[11];
-                            spiltted = GetFilename.Split('.');
-                            GetFilename = FilesPath + "\\" + spiltted[0] + ".dds";
-
-                            if (TextureFile == null && TextureSize == 0)
-                            {
-                                TextureFile = File.ReadAllBytes(GetFilename);
-                                TextureSize = TextureFile.Length;
-
-                                byte[] bWidth = new byte[4];
-                                byte[] bHeight = new byte[4];
-
-                                Array.Copy(TextureFile, 12, bHeight, 0, bHeight.Length);
-                                Array.Copy(TextureFile, 16, bWidth, 0, bWidth.Length);
-
-                                ddswidth = BitConverter.ToInt32(bWidth, 0);
-                                ddsheight = BitConverter.ToInt32(bHeight, 0);
-                            }
-                            else
-                            {
-                                byte[] TempFile = File.ReadAllBytes(GetFilename);
-                                byte[] temp = TextureFile;
-                                TextureFile = new byte[temp.Length + TempFile.Length - 128];
-                                Array.Copy(temp, 0, TextureFile, 0, temp.Length);
-                                Array.Copy(TempFile, 128, TextureFile, temp.Length, TempFile.Length - 128);
-                                TextureSize = TextureFile.Length - 128;
-
-                                byte[] bWidth = new byte[4];
-                                byte[] bHeight = new byte[4];
-
-                                Array.Copy(TempFile, 12, bHeight, 0, bHeight.Length);
-                                Array.Copy(TempFile, 16, bWidth, 0, bWidth.Length);
-
-                                int tempWidth = BitConverter.ToInt32(bWidth, 0);
-                                int tempHeight = BitConverter.ToInt32(bHeight, 0);
-
-                                if (tempWidth != ddswidth) ddswidth = tempWidth;
-                                ddsheight += tempHeight;
-
-                                temp = null;
-                                TempFile = null;
-                                bWidth = null;
-                                bHeight = null;
-                            }
-                        }
-                    }
-
-                    ffs.texture[0].dds_height = new byte[4];
-                    ffs.texture[0].dds_width = new byte[4];
-                    ffs.texture[0].dds_height = BitConverter.GetBytes(ddsheight);
-                    ffs.texture[0].dds_width = BitConverter.GetBytes(ddswidth);
-                    ffs.texture[0].tex_length = new byte[4];
-                    ffs.texture[0].tex_length = BitConverter.GetBytes(TextureSize);
-                    ffs.texture[0].dds_content = new byte[TextureFile.Length];
-                    Array.Copy(TextureFile, 0, ffs.texture[0].dds_content, 0, TextureFile.Length);
-                    Array.Copy(ffs.texture[0].dds_height, 0, ffs.texture[0].dds_content, 12, ffs.texture[0].dds_height.Length);
-                    Array.Copy(ffs.texture[0].dds_width, 0, ffs.texture[0].dds_content, 16, ffs.texture[0].dds_width.Length);
-                    Array.Copy(ffs.texture[0].tex_length, 0, ffs.texture[0].dds_content, 20, ffs.texture[0].tex_length.Length);
-
-                    ddswidth = BitConverter.ToInt32(ffs.texture[0].dds_width, 0);
-                    ddsheight = BitConverter.ToInt32(ffs.texture[0].dds_height, 0);
-
-                    uint sym_off = 0;
-                    uint ker_off = 0;
-                    for (int i = 0; i < par.Length; i++)
-                    {
-                        if (par[i].IndexOf('"') > 0 && (par[i].IndexOf("fontno=") > 0))
-                        {
-                            if (par[i].IndexOf("padding=") > 0)
-                            {
-                                string[] splitted = par[i].Split(new char[] { ' ', '=', '\"', ',' });
-
-                                x_right = Convert.ToInt32(splitted[41]);
-                                x_left = Convert.ToInt32(splitted[43]);
-                                y_up = Convert.ToInt32(splitted[42]);
-                                y_down = Convert.ToInt32(splitted[44]);
-
-                                font_no = Convert.ToInt32(splitted[splitted.Length - 2]);
-                                if (font_no == 1) first_font = true;
-
-
-                                //byte[] tex_block = new byte[4];
-
-
-                                for (int l = 0; l < ffs.tex_head.Count; l++)
-                                {
-                                    for (int k = 0; k < ffs.font_coord.Count(); k++)
-                                    {
-                                        if (ffs.font_coord[k].index == font_no && ffs.tex_head[l].font_num == ffs.font_coord[k].index)
-                                        {
-                                            //tex_block = ffs.font_coord[k].texture_data;
-                                            dataIndex = k;
-                                            texIndex = l;
-                                            break;
-                                        }
-                                    }
-                                }
-
-
-                                /*for (int j = 0; j < ffs.tex_head.Count(); j++)
-                                {
-                                    if (BitConverter.ToString(ffs.tex_head[j].tex_data) == BitConverter.ToString(tex_block))
-                                    {
-                                        texIndex = j;
-                                        break;
-                                    }
-                                }*/
-                            }
-                        }
-
-                        if ((par[i].IndexOf("lineHeight=") > 0))
-                        {
-                            string[] splitted = par[i].Split(new char[] { ' ', '=', ',', '\"' });
-
-                            int ind1 = 0, ind2 = 0, ind3 = 0;
-
-                            for (int j = 0; j < splitted.Count(); j++)
-                            {
-                                if (splitted[j] == "lineHeight" && splitted[j + 1] == "")
-                                {
-                                    ind1 = j + 2;
-                                }
-                                else if (splitted[j] == "lineHeight" && splitted[j + 1] != "")
-                                {
-                                    ind1 = j + 1;
-                                }
-
-                                if (splitted[j] == "scaleW" && splitted[j + 1] == "")
-                                {
-                                    ind2 = j + 2;
-                                }
-                                else if (splitted[j] == "scaleW" && splitted[j + 1] != "")
-                                {
-                                    ind2 = j + 1;
-                                }
-
-                                if (splitted[j] == "scaleH" && splitted[j + 1] == "")
-                                {
-                                    ind3 = j + 2;
-                                }
-                                else if (splitted[j] == "scaleH" && splitted[j + 1] != "")
-                                {
-                                    ind3 = j + 1;
-                                }
-                            }
-
-                            common_height = Convert.ToInt32(splitted[ind1]);
-
-                            if (first_font)
-                            {
-                                xEnd = Convert.ToInt32(splitted[ind2]);
-                                yEnd = Convert.ToInt32(splitted[ind3]);
-                                //yCommutator += yEnd;
-                                yCommutator = Convert.ToInt32(splitted[ind3]);
-
-                                xStartDiv = 0;
-                                yStartDiv = 0;
-                                xEndDiv = Convert.ToSingle(xEnd) / Convert.ToSingle(ddswidth);//Convert.ToSingle(xEnd) / Convert.ToSingle(ddswidth);
-                                yEndDiv = Convert.ToSingle(yEnd) / Convert.ToSingle(ddsheight);//Convert.ToSingle(yEnd) / Convert.ToSingle(ddsheight);
-
-                                ffs.tex_head[texIndex].x_start = new byte[4];
-                                ffs.tex_head[texIndex].x_start = BitConverter.GetBytes(xStartDiv);//xStartDiv);
-                                ffs.tex_head[texIndex].y_start = new byte[4];
-                                ffs.tex_head[texIndex].y_start = BitConverter.GetBytes(yStartDiv);//yStartDiv);
-                                ffs.tex_head[texIndex].x_end = new byte[4];
-                                ffs.tex_head[texIndex].x_end = BitConverter.GetBytes(xEndDiv);//xEndDiv);
-                                ffs.tex_head[texIndex].y_end = new byte[4];
-                                ffs.tex_head[texIndex].y_end = BitConverter.GetBytes(yEndDiv);//yEndDiv);
-
-                                uint tablesize = (32 * (uint)font_count) + 16;
-                                sym_off = tablesize;
-
-                                ffs.font_head[font_no - 1].sym_offset = new byte[4];
-                                ffs.font_head[font_no - 1].sym_offset = BitConverter.GetBytes(sym_off);
-
-                                /*ffs.font_head[font_no].kern_offset = new byte[4];
-                                ffs.font_head[font_no].kern_offset = BitConverter.GetBytes(ker_off);*/
-
-                                first_font = false;
-                            }
-                            else
-                            {
-                                xStart = 0;
-                                yStart = yCommutator;
-                                xEnd = Convert.ToInt32(splitted[ind2]);
-                                yEnd = Convert.ToInt32(splitted[ind3]) + yStart;
-                                yCommutator = yEnd;
-
-                                dds_x = Convert.ToInt32(splitted[ind2]);
-                                dds_y = Convert.ToInt32(splitted[ind3]);
-
-                                ffs.font_head[font_no - 1].sym_offset = new byte[4];
-                                ffs.font_head[font_no - 1].sym_offset = BitConverter.GetBytes(sym_off);
-
-                                /*ffs.font_head[font_no].kern_offset = new byte[4];
-                                ffs.font_head[font_no].kern_offset = BitConverter.GetBytes(ker_off);*/
-
-                                xStartDiv = Convert.ToSingle(xStart) / Convert.ToSingle(ddswidth);
-                                yStartDiv = Convert.ToSingle(yStart) / Convert.ToSingle(ddsheight);
-                                xEndDiv = Convert.ToSingle(xEnd) / Convert.ToSingle(ddswidth);//Convert.ToSingle(xEnd) / Convert.ToSingle(ddswidth);
-                                yEndDiv = Convert.ToSingle(yEnd) / Convert.ToSingle(ddsheight);//Convert.ToSingle(yEnd) / Convert.ToSingle(ddsheight);
-
-                                ffs.tex_head[texIndex].x_start = new byte[4];
-                                ffs.tex_head[texIndex].x_start = BitConverter.GetBytes(xStartDiv);//xStartDiv);
-                                ffs.tex_head[texIndex].y_start = new byte[4];
-                                ffs.tex_head[texIndex].y_start = BitConverter.GetBytes(yStartDiv);//yStartDiv);
-                                ffs.tex_head[texIndex].x_end = new byte[4];
-                                ffs.tex_head[texIndex].x_end = BitConverter.GetBytes(xEndDiv);//xEndDiv);
-                                ffs.tex_head[texIndex].y_end = new byte[4];
-                                ffs.tex_head[texIndex].y_end = BitConverter.GetBytes(yEndDiv);//yEndDiv);
-                            }
-                        }
-
-                        if (par[i].IndexOf("<chars count=") > 0)
-                        {
-                            string[] splitted = par[i].Split(new char[] { ' ', '=', '\"', ',' });
-                            ch_count = Convert.ToInt32(splitted[5]);
-
-                            ffs.font_head[ffs.font_coord[dataIndex].index - 1].count_symbols = new byte[2];
-                            ffs.font_head[ffs.font_coord[dataIndex].index - 1].count_symbols = BitConverter.GetBytes(ch_count);
-                            ffs.font_head[ffs.font_coord[dataIndex].index - 1].count_kernings = BitConverter.GetBytes(0);
-                            ffs.font_head[ffs.font_coord[dataIndex].index - 1].kern_offset = BitConverter.GetBytes(kern_off);
-                        }
-
-                        if (par[i].IndexOf("<char id=") > 0)
-                        {
-                            string[] splitted = par[i].Split(new char[] { ' ', '=', '\"', ',' });
-
-                            int char_id = Convert.ToInt32(splitted[7]);
-                            char ch = (char)char_id;
-                            string s = ch.ToString() + "\0";
-                            int x = Convert.ToInt32(splitted[11]);// +x_dds;
-                            int y = Convert.ToInt32(splitted[15]);// +dds_y;
-                            int width = Convert.ToInt32(splitted[19]);
-                            int height = Convert.ToInt32(splitted[23]);
-                            int x_offset = (x_left + x_right) + Convert.ToInt32(splitted[27]);
-                            int x_advanced = Convert.ToInt32(splitted[35]);
-                            int y_offset = common_height - (y_down + y_up) - Convert.ToInt32(splitted[31]);
-                            int chnl = Convert.ToInt32(splitted[43]);
-                            int index = font_no;
-                            int visible = 0;
-                            bool Edited = true;
-
-                            if (chnl == 15) visible = 1;
-
-                            byte[] bChar = new byte[2];
-                            bChar = UnicodeEncoding.Unicode.GetBytes(s);
-
-                            byte[] bX = new byte[2];
-                            bX = BitConverter.GetBytes(x);
-                            byte[] bY = new byte[2];
-                            bY = BitConverter.GetBytes(y);
-                            byte[] bWidth = new byte[2];
-                            bWidth = BitConverter.GetBytes(width);
-                            byte[] bHeight = new byte[2];
-                            bHeight = BitConverter.GetBytes(height);
-                            byte[] bXoffset = new byte[2];
-                            bXoffset = BitConverter.GetBytes(x_offset);
-                            byte[] bXadvanced = new byte[2];
-                            bXadvanced = BitConverter.GetBytes(x_advanced);
-                            byte[] bYoffset = new byte[2];
-                            bYoffset = BitConverter.GetBytes(y_offset);
-                            byte[] bVisible = new byte[2];
-                            bVisible = BitConverter.GetBytes(visible);
-
-                            byte[] nil = new byte[2];
-                            newffs.coord_add(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, index, Edited, nil);
-
-                            newffs.font_coord[newffs.font_coord.Count - 1].symbol = new byte[2];
-                            Array.Copy(bChar, 0, newffs.font_coord[newffs.font_coord.Count - 1].symbol, 0, newffs.font_coord[newffs.font_coord.Count - 1].symbol.Length);
-
-                            newffs.font_coord[newffs.font_coord.Count - 1].x_start = new byte[2];
-                            Array.Copy(bX, 0, newffs.font_coord[newffs.font_coord.Count - 1].x_start, 0, newffs.font_coord[newffs.font_coord.Count - 1].x_start.Length);
-
-                            newffs.font_coord[newffs.font_coord.Count - 1].y_start = new byte[2];
-                            Array.Copy(bY, 0, newffs.font_coord[newffs.font_coord.Count - 1].y_start, 0, newffs.font_coord[newffs.font_coord.Count - 1].y_start.Length);
-
-                            newffs.font_coord[newffs.font_coord.Count - 1].coord_width = new byte[2];
-                            Array.Copy(bWidth, 0, newffs.font_coord[newffs.font_coord.Count - 1].coord_width, 0, newffs.font_coord[newffs.font_coord.Count - 1].coord_width.Length);
-
-                            newffs.font_coord[newffs.font_coord.Count - 1].coord_height = new byte[2];
-                            Array.Copy(bHeight, 0, newffs.font_coord[newffs.font_coord.Count - 1].coord_height, 0, newffs.font_coord[newffs.font_coord.Count - 1].coord_height.Length);
-
-                            newffs.font_coord[newffs.font_coord.Count - 1].x_advanced = new byte[2];
-                            Array.Copy(bXadvanced, 0, newffs.font_coord[newffs.font_coord.Count - 1].x_advanced, 0, newffs.font_coord[newffs.font_coord.Count - 1].x_advanced.Length);
-
-                            newffs.font_coord[newffs.font_coord.Count - 1].x_offset = new byte[2];
-                            Array.Copy(bXoffset, 0, newffs.font_coord[newffs.font_coord.Count - 1].x_offset, 0, newffs.font_coord[newffs.font_coord.Count - 1].x_offset.Length);
-
-                            newffs.font_coord[newffs.font_coord.Count - 1].y_offset = new byte[2];
-                            Array.Copy(bYoffset, 0, newffs.font_coord[newffs.font_coord.Count - 1].y_offset, 0, newffs.font_coord[newffs.font_coord.Count - 1].y_offset.Length);
-
-                            newffs.font_coord[newffs.font_coord.Count - 1].last_unknown_data = new byte[4];
-                            Array.Copy(bVisible, 0, newffs.font_coord[newffs.font_coord.Count - 1].last_unknown_data, 0, newffs.font_coord[newffs.font_coord.Count - 1].last_unknown_data.Length);
-
-                            newffs.font_coord[newffs.font_coord.Count - 1].texture_data = new byte[4];
-                            Array.Copy(ffs.tex_head[texIndex].tex_data, 0, newffs.font_coord[newffs.font_coord.Count - 1].texture_data, 0, newffs.font_coord[newffs.font_coord.Count - 1].texture_data.Length);
-
-                            newffs.font_coord[newffs.font_coord.Count - 1].font_data = new byte[4];
-                            Array.Copy(ffs.font_head[fontIndex].fonts_data, 0, newffs.font_coord[newffs.font_coord.Count - 1].font_data, 0, ffs.font_head[ffs.tex_head[fontIndex].font_num - 1].fonts_data.Length);
-
-
-                            sym_off += 24;
-                        }
-
-                        if (par[i].IndexOf("<kernings count=") > 0)
-                        {
-                            string[] splitted = par[i].Split(new char[] { ' ', '=', '\"', ',' });
-                            ker_count = Convert.ToInt32(splitted[5]);
-
-                            ffs.font_head[font_no - 1].count_kernings = new byte[2];
-                            ffs.font_head[font_no - 1].count_kernings = BitConverter.GetBytes(ker_count);
-                            ffs.font_head[font_no - 1].kern_offset = new byte[2];
-                            ffs.font_head[font_no - 1].kern_offset = BitConverter.GetBytes(kern_off);
-                            kern_off += (uint)ker_count * 8;
-                        }
-
-                        if (par[i].IndexOf("<kerning first=") > 0)
-                        {
-                            string[] splitted = par[i].Split(new char[] { ' ', '=', '\"', ',' });
-
-                            int f_char_id = Convert.ToInt32(splitted[7]);
-                            int s_char_id = Convert.ToInt32(splitted[11]);
-                            int amount = Convert.ToInt32(splitted[15]);
-
-                            char f_ch = (char)f_char_id;
-                            char s_ch = (char)s_char_id;
-
-                            string f_s = f_ch.ToString() + "\0";
-                            string s_s = s_ch.ToString() + "\0";
-
-                            int index = font_no;
-
-                            byte[] b_f_Char = new byte[2];
-                            b_f_Char = UnicodeEncoding.Unicode.GetBytes(f_s);
-                            byte[] b_s_Char = new byte[2];
-                            b_s_Char = UnicodeEncoding.Unicode.GetBytes(s_s);
-                            byte[] b_amount = new byte[4];
-                            b_amount = BitConverter.GetBytes(amount);
-
-
-                            byte[] nil = new byte[2];
-                            byte[] nil2 = new byte[4];
-                            newffs.kern_add(nil, nil, nil2, index, true, nil2);
-
-                            newffs.font_kern[newffs.font_kern.Count - 1].first_char = new byte[2];
-                            Array.Copy(b_f_Char, 0, newffs.font_kern[newffs.font_kern.Count - 1].first_char, 0, newffs.font_kern[newffs.font_kern.Count - 1].first_char.Length);
-
-                            newffs.font_kern[newffs.font_kern.Count - 1].second_char = new byte[2];
-                            Array.Copy(b_s_Char, 0, newffs.font_kern[newffs.font_kern.Count - 1].second_char, 0, newffs.font_kern[newffs.font_kern.Count - 1].second_char.Length);
-
-                            newffs.font_kern[newffs.font_kern.Count - 1].amount = new byte[4];
-                            Array.Copy(b_amount, 0, newffs.font_kern[newffs.font_kern.Count - 1].amount, 0, newffs.font_kern[newffs.font_kern.Count - 1].amount.Length);
-
-                            newffs.font_kern[newffs.font_kern.Count - 1].font_data = new byte[4];
-                            Array.Copy(ffs.font_head[ffs.font_coord[fontIndex].index - 1].fonts_data, 0, newffs.font_kern[newffs.font_kern.Count - 1].font_data, 0, ffs.font_head[ffs.font_coord[fontIndex].index - 1].fonts_data.Length);
-
-
-                            ker_off += 8;
-                        }
-                    }
-
-                    /*for (int j = 0; j < ffs.font_head.Count; j++)
-                    {
-                        uint kern_off = BitConverter.ToUInt32(ffs.font_head[j].kern_offset, 0);
-                        kern_off += sym_off;
-
-                        ffs.font_head[j].kern_offset = new byte[4];
-                        ffs.font_head[j].kern_offset = BitConverter.GetBytes(kern_off);
-                    }*/
-
-
-                    for (int k = 0; k < newffs.font_coord.Count; k++)
-                    {
-                        for (int m = k - 1; m >= 0; m--)
-                        {
-                            if (BitConverter.ToInt16(newffs.font_coord[m].symbol, 0) >
-                                BitConverter.ToInt16(newffs.font_coord[m + 1].symbol, 0)
-                                && newffs.font_coord[m].index - 1 == newffs.font_coord[m + 1].index - 1)
-                            {
-                                byte[] temp_texture_data = newffs.font_coord[m].texture_data;
-                                byte[] temp_symbol = newffs.font_coord[m].symbol;
-                                byte[] temp_x_start = newffs.font_coord[m].x_start;
-                                byte[] temp_y_start = newffs.font_coord[m].y_start;
-                                byte[] temp_coord_width = newffs.font_coord[m].coord_width;
-                                byte[] temp_coord_height = newffs.font_coord[m].coord_height;
-                                byte[] temp_x_advanced = newffs.font_coord[m].x_advanced;
-                                byte[] temp_x_offset = newffs.font_coord[m].x_offset;
-                                byte[] temp_y_offset = newffs.font_coord[m].y_offset;
-                                byte[] temp_last_unknown_data = newffs.font_coord[m].last_unknown_data;
-                                int temp_index = newffs.font_coord[m].index;
-                                byte[] temp_font_data = newffs.font_coord[m].font_data;
-                                bool temp_new_coordinates = newffs.font_coord[m].new_coordinates;
-
-                                newffs.font_coord[m].texture_data = newffs.font_coord[m + 1].texture_data;
-                                newffs.font_coord[m].symbol = newffs.font_coord[m + 1].symbol;
-                                newffs.font_coord[m].x_start = newffs.font_coord[m + 1].x_start;
-                                newffs.font_coord[m].y_start = newffs.font_coord[m + 1].y_start;
-                                newffs.font_coord[m].coord_width = newffs.font_coord[m + 1].coord_width;
-                                newffs.font_coord[m].coord_height = newffs.font_coord[m + 1].coord_height;
-                                newffs.font_coord[m].x_advanced = newffs.font_coord[m + 1].x_advanced;
-                                newffs.font_coord[m].x_offset = newffs.font_coord[m + 1].x_offset;
-                                newffs.font_coord[m].y_offset = newffs.font_coord[m + 1].y_offset;
-                                newffs.font_coord[m].last_unknown_data = newffs.font_coord[m + 1].last_unknown_data;
-                                newffs.font_coord[m].index = newffs.font_coord[m + 1].index;
-                                newffs.font_coord[m].font_data = newffs.font_coord[m + 1].font_data;
-                                newffs.font_coord[m].new_coordinates = newffs.font_coord[m + 1].new_coordinates;
-
-                                newffs.font_coord[m + 1].texture_data = temp_texture_data;
-                                newffs.font_coord[m + 1].symbol = temp_symbol;
-                                newffs.font_coord[m + 1].x_start = temp_x_start;
-                                newffs.font_coord[m + 1].y_start = temp_y_start;
-                                newffs.font_coord[m + 1].coord_width = temp_coord_width;
-                                newffs.font_coord[m + 1].coord_height = temp_coord_height;
-                                newffs.font_coord[m + 1].x_advanced = temp_x_advanced;
-                                newffs.font_coord[m + 1].x_offset = temp_x_offset;
-                                newffs.font_coord[m + 1].y_offset = temp_y_offset;
-                                newffs.font_coord[m + 1].last_unknown_data = temp_last_unknown_data;
-                                newffs.font_coord[m + 1].index = temp_index;
-                                newffs.font_coord[m + 1].font_data = temp_font_data;
-                                newffs.font_coord[m + 1].new_coordinates = temp_new_coordinates;
-                            }
-                        }
-                    }
-
-
-                    for (int i = 0; i < newffs.tex_head.Count; i++)
-                    {
-                        for (int j = newffs.tex_head.Count - i - 1; j >= 0; j--)
-                        {
-                            if (BitConverter.ToString(ffs.tex_head[j].tex_data) == BitConverter.ToString(newffs.tex_head[i].tex_data))
-                            {
-                                ffs.tex_head[j].x_start = newffs.tex_head[i].x_start;
-                                ffs.tex_head[j].y_start = newffs.tex_head[i].x_start;
-                                ffs.tex_head[j].x_end = newffs.tex_head[i].x_end;
-                                ffs.tex_head[j].y_end = newffs.tex_head[i].y_end;
-                                ffs.tex_head[j].tex_num = newffs.tex_head[i].tex_num;
-                                ffs.tex_head[j].tex_data = newffs.tex_head[i].tex_data;
-                            }
-                        }
-                    }
-
-                    
-
-                    ffs.font_coord = newffs.font_coord;
-                    ffs.font_kern = newffs.font_kern;
-                    filltextable();
-                    fillcoordtable(sel_font);
-                    edited = true;
-
-                }
-            }
-        }
-
-        private void importTexturesSomehowfntToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "FNT format (*.fnt) | *.fnt";
-
-            if (ofd.ShowDialog() == DialogResult.OK)
-            {
-                int xStart = 0;
-                int yStart = 0;
-                int xEnd = 0;
-                int yEnd = 0;
-                float xStartDiv = 0.0f;
-                float yStartDiv = 0.0f;
-                float xEndDiv = 0.0f;
-                float yEndDiv = 0.0f;
-                int yCommutator = 0;
-                int ddswidth = BitConverter.ToInt32(ffs.texture[0].dds_width, 0);
-                int ddsheight = BitConverter.ToInt32(ffs.texture[0].dds_height, 0);
-
-                int dds_x = 0;
-                int dds_y = 0;
-
-                int sel_font = comboBox1.SelectedIndex;
-                if (sel_font == -1) sel_font = 0;
-
-                int font_count = BitConverter.ToInt32(ffs.font_count, 0);
-                int check_font_count = 0;
-                int font_no = -1;
-                int x_right = 0;
-                int x_left = 0;
-                int y_up = 0;
-                int y_down = 0;
-                int x_spacing = 0;
-                int y_spacing = 0;
-                int common_height = 0;
-                int dds_num = dataGridTextures.SelectedCells[0].RowIndex;
-                int kpc = 0; //kerning pair counter
-                int texIndex = 0;
-                int dataIndex = 0;
-                int fontIndex = 0;
-
-                string[] par = File.ReadAllLines(ofd.FileName);
-                bool has_coord_counter = false;
-                bool has_kern_counter = false;
-                bool first_font = false;
-                int ch_count = 0;
-                int ker_count = 0;
-
-                byte[] TextureFile = null;
-                int TextureSize = 0;
-
-                uint table_size = 12 + (32 * (uint)font_count) + 4;
-                uint kern_off = table_size;
-
-                Font_Structure newffs = new Font_Structure();
-
-                for (int n = 0; n < par.Length; n++) //Убираем дебильные кавычки и скобки от xml файла
-                {
-                    if ((par[n].IndexOf('<') >= 0) || (par[n].IndexOf('<') >= 0 && par[n].IndexOf('/') > 0))
-                    {
-                        par[n] = par[n].Remove(par[n].IndexOf('<'), 1);
-                        if (par[n].IndexOf('/') >= 0) par[n] = par[n].Remove(par[n].IndexOf('/'), 1);
-                    }
-                    if (par[n].IndexOf('>') >= 0 || (par[n].IndexOf('/') >= 0 && par[n + 1].IndexOf('>') > 0))
-                    {
-                        par[n] = par[n].Remove(par[n].IndexOf('>'), 1);
-                        if (par[n].IndexOf('/') >= 0) par[n] = par[n].Remove(par[n].IndexOf('/'), 1);
-                    }
-                    if (par[n].IndexOf('"') >= 0)
-                    {
-                        while (par[n].IndexOf('"') >= 0) par[n] = par[n].Remove(par[n].IndexOf('"'), 1);
-                    }
-                }
-
-                    for (int j = 0; j < par.Length; j++)
-                    {
-                        if (par[j].IndexOf("fontno=") >= 0)
-                        {
-                            check_font_count++;
-                        }
-
-                        if (par[j].IndexOf("chars count=") >= 0)
-                        {
-                            has_coord_counter = true;
-
-                            string[] splitted = par[j].Split(new char[] { ' ', '=', ',' });
-                            ch_count = Convert.ToInt32(splitted[splitted.Length - 1]);
-
-                            kern_off += (uint)ch_count * 24;
-                        }
-
-                        if (par[j].IndexOf("kernings count=") >= 0)
-                        {
-                            has_kern_counter = true;
-                            string[] splitted = par[j].Split(new char[] { ' ', '=', ',' });
-                            ker_count = Convert.ToInt32(splitted[splitted.Length - 1]);
-                        }
-                        else if (par[j].IndexOf("kerning first=") >= 0 && has_kern_counter == false) has_kern_counter = true;
-                    }
-
-                if (check_font_count == font_count)
-                {
-                    //Сортировка текстур
-
-                    FileInfo fi = new FileInfo(ofd.FileName);
-                    string FilesPath = fi.DirectoryName;
-
-                    ffs.font_kern.Clear();
-
-                    for (int j = 0; j < par.Length; j++)
-                    {
-                        if (par[j].IndexOf("page id") >= 0 && par[j].IndexOf("file") > 0)
-                        {
-                            string[] spiltted = par[j].Split(new char[] { ' ', '=' });
-                            int ind = 0;
-
-                            for (int t = 0; t < spiltted.Length; t++)
-                            {
-                                if (spiltted[t] == "file") ind = t + 1;
-                            }
-
-                            string GetFilename = spiltted[ind];
-                            spiltted = GetFilename.Split('.');
-                            GetFilename = FilesPath + "\\" + spiltted[0] + ".dds";
-
-                            if (TextureFile == null && TextureSize == 0)
-                            {
-                                TextureFile = File.ReadAllBytes(GetFilename);
-                                TextureSize = TextureFile.Length;
-
-                                byte[] bWidth = new byte[4];
-                                byte[] bHeight = new byte[4];
-
-                                Array.Copy(TextureFile, 12, bHeight, 0, bHeight.Length);
-                                Array.Copy(TextureFile, 16, bWidth, 0, bWidth.Length);
-
-                                ddswidth = BitConverter.ToInt32(bWidth, 0);
-                                ddsheight = BitConverter.ToInt32(bHeight, 0);
-                            }
-                            else
-                            {
-                                byte[] TempFile = File.ReadAllBytes(GetFilename);
-                                byte[] temp = TextureFile;
-                                TextureFile = new byte[temp.Length + TempFile.Length - 128];
-                                Array.Copy(temp, 0, TextureFile, 0, temp.Length);
-                                Array.Copy(TempFile, 128, TextureFile, temp.Length, TempFile.Length - 128);
-                                TextureSize = TextureFile.Length - 128;
-
-                                byte[] bWidth = new byte[4];
-                                byte[] bHeight = new byte[4];
-
-                                Array.Copy(TempFile, 12, bHeight, 0, bHeight.Length);
-                                Array.Copy(TempFile, 16, bWidth, 0, bWidth.Length);
-
-                                int tempWidth = BitConverter.ToInt32(bWidth, 0);
-                                int tempHeight = BitConverter.ToInt32(bHeight, 0);
-
-                                if (tempWidth != ddswidth && tempWidth > ddswidth) ddswidth = tempWidth;
-                                ddsheight += tempHeight;
-
-                                temp = null;
-                                TempFile = null;
-                                bWidth = null;
-                                bHeight = null;
-                            }
-                        }
-                    }
-
-                    ffs.texture[0].dds_height = new byte[4];
-                    ffs.texture[0].dds_width = new byte[4];
-                    ffs.texture[0].dds_height = BitConverter.GetBytes(ddsheight);
-                    ffs.texture[0].dds_width = BitConverter.GetBytes(ddswidth);
-                    ffs.texture[0].tex_length = new byte[4];
-                    ffs.texture[0].tex_length = BitConverter.GetBytes(TextureSize);
-                    ffs.texture[0].dds_content = new byte[TextureFile.Length];
-                    Array.Copy(TextureFile, 0, ffs.texture[0].dds_content, 0, TextureFile.Length);
-                    Array.Copy(ffs.texture[0].dds_height, 0, ffs.texture[0].dds_content, 12, ffs.texture[0].dds_height.Length);
-                    Array.Copy(ffs.texture[0].dds_width, 0, ffs.texture[0].dds_content, 16, ffs.texture[0].dds_width.Length);
-                    Array.Copy(ffs.texture[0].tex_length, 0, ffs.texture[0].dds_content, 20, ffs.texture[0].tex_length.Length);
-
-                    ddswidth = BitConverter.ToInt32(ffs.texture[0].dds_width, 0);
-                    ddsheight = BitConverter.ToInt32(ffs.texture[0].dds_height, 0);
-
-                    uint sym_off = 0;
-                    uint ker_off = 0;
-                    for (int i = 0; i < par.Length; i++)
-                    {
-                        if (par[i].IndexOf("fontno=") >= 0)
-                        {
-                            if (par[i].IndexOf("padding=") >= 0)
-                            {
-                                string[] splitted = par[i].Split(new char[] { ' ', '=', '\"', ',' });
-                                int ind = 0;
-                                int ind2 = 0;
-
-                                for (int t = 0; t < splitted.Length; t++)
-                                {
-                                    if (splitted[t] == "padding")
-                                    {
-                                        ind = t + 1;
-                                        //break;
-                                    }
-                                    if (splitted[t] == "spacing")
-                                    {
-                                        ind2 = t + 1;
-                                    }
-                                }
-
-                                x_right = Convert.ToInt32(splitted[ind]);
-                                x_left = Convert.ToInt32(splitted[ind + 2]);
-                                y_up = Convert.ToInt32(splitted[ind + 1]);
-                                y_down = Convert.ToInt32(splitted[ind + 3]);
-
-                                x_spacing = Convert.ToInt32(splitted[ind2]);
-                                y_spacing = Convert.ToInt32(splitted[ind2 + 1]);
-
-
-                                font_no = Convert.ToInt32(splitted[splitted.Length - 1]);
-                                if (font_no == 1) first_font = true;
-
-
-                                //byte[] tex_block = new byte[4];
-
-
-                                for (int l = 0; l < ffs.tex_head.Count; l++)
-                                {
-                                    for (int k = 0; k < ffs.font_coord.Count(); k++)
-                                    {
-                                        if (ffs.font_coord[k].index == font_no && ffs.tex_head[l].font_num == ffs.font_coord[k].index)
-                                        {
-                                            //tex_block = ffs.font_coord[k].texture_data;
-                                            dataIndex = k;
-                                            texIndex = l;
-                                            break;
-                                        }
-                                    }
-                                }
-
-
-                                /*for (int j = 0; j < ffs.tex_head.Count(); j++)
-                                {
-                                    if (BitConverter.ToString(ffs.tex_head[j].tex_data) == BitConverter.ToString(tex_block))
-                                    {
-                                        texIndex = j;
-                                        break;
-                                    }
-                                }*/
-                            }
-                        }
-
-                        if ((par[i].IndexOf("lineHeight=") >= 0))
-                        {
-                            string[] splitted = par[i].Split(new char[] { ' ', '=', ',', '\"' });
-
-                            int ind1 = 0, ind2 = 0, ind3 = 0;
-
-                            for (int j = 0; j < splitted.Count(); j++)
-                            {
-                                if (splitted[j] == "lineHeight")// && splitted[j + 1] != "")
-                                {
-                                    ind1 = j + 1;
-                                }
-
-                                else if (splitted[j] == "scaleW")// && splitted[j + 1] != "")
-                                {
-                                    ind2 = j + 1;
-                                }
-
-                                else if (splitted[j] == "scaleH")// && splitted[j + 1] != "")
-                                {
-                                    ind3 = j + 1;
-                                }
-                            }
-
-                            common_height = Convert.ToInt32(splitted[ind1]);
-
-                            if (first_font)
-                            {
-                                xEnd = Convert.ToInt32(splitted[ind2]);
-                                yEnd = Convert.ToInt32(splitted[ind3]);
-                                //yCommutator += yEnd;
-                                yCommutator = Convert.ToInt32(splitted[ind3]);
-
-                                xStartDiv = 0;
-                                yStartDiv = 0;
-                                xEndDiv = Convert.ToSingle(xEnd) / Convert.ToSingle(ddswidth);//Convert.ToSingle(xEnd) / Convert.ToSingle(ddswidth);
-                                yEndDiv = Convert.ToSingle(yEnd) / Convert.ToSingle(ddsheight);//Convert.ToSingle(yEnd) / Convert.ToSingle(ddsheight);
-
-                                ffs.tex_head[texIndex].x_start = new byte[4];
-                                ffs.tex_head[texIndex].x_start = BitConverter.GetBytes(xStartDiv);//xStartDiv);
-                                ffs.tex_head[texIndex].y_start = new byte[4];
-                                ffs.tex_head[texIndex].y_start = BitConverter.GetBytes(yStartDiv);//yStartDiv);
-                                ffs.tex_head[texIndex].x_end = new byte[4];
-                                ffs.tex_head[texIndex].x_end = BitConverter.GetBytes(xEndDiv);//xEndDiv);
-                                ffs.tex_head[texIndex].y_end = new byte[4];
-                                ffs.tex_head[texIndex].y_end = BitConverter.GetBytes(yEndDiv);//yEndDiv);
-
-                                uint tablesize = (32 * (uint)font_count) + 16;
-                                sym_off = tablesize;
-
-                                ffs.font_head[font_no - 1].sym_offset = new byte[4];
-                                ffs.font_head[font_no - 1].sym_offset = BitConverter.GetBytes(sym_off);
-
-                                /*ffs.font_head[font_no].kern_offset = new byte[4];
-                                ffs.font_head[font_no].kern_offset = BitConverter.GetBytes(ker_off);*/
-
-                                first_font = false;
-                            }
-                            else
-                            {
-                                xStart = 0;
-                                yStart = yCommutator;
-                                xEnd = Convert.ToInt32(splitted[ind2]);
-                                yEnd = Convert.ToInt32(splitted[ind3]) + yStart;
-                                yCommutator = yEnd;
-
-                                dds_x = Convert.ToInt32(splitted[ind2]);
-                                dds_y = Convert.ToInt32(splitted[ind3]);
-
-                                ffs.font_head[font_no - 1].sym_offset = new byte[4];
-                                ffs.font_head[font_no - 1].sym_offset = BitConverter.GetBytes(sym_off);
-
-                                /*ffs.font_head[font_no].kern_offset = new byte[4];
-                                ffs.font_head[font_no].kern_offset = BitConverter.GetBytes(ker_off);*/
-
-                                xStartDiv = Convert.ToSingle(xStart) / Convert.ToSingle(ddswidth);
-                                yStartDiv = Convert.ToSingle(yStart) / Convert.ToSingle(ddsheight);
-                                xEndDiv = Convert.ToSingle(xEnd) / Convert.ToSingle(ddswidth);//Convert.ToSingle(xEnd) / Convert.ToSingle(ddswidth);
-                                yEndDiv = Convert.ToSingle(yEnd) / Convert.ToSingle(ddsheight);//Convert.ToSingle(yEnd) / Convert.ToSingle(ddsheight);
-
-                                ffs.tex_head[texIndex].x_start = new byte[4];
-                                ffs.tex_head[texIndex].x_start = BitConverter.GetBytes(xStartDiv);//xStartDiv);
-                                ffs.tex_head[texIndex].y_start = new byte[4];
-                                ffs.tex_head[texIndex].y_start = BitConverter.GetBytes(yStartDiv);//yStartDiv);
-                                ffs.tex_head[texIndex].x_end = new byte[4];
-                                ffs.tex_head[texIndex].x_end = BitConverter.GetBytes(xEndDiv);//xEndDiv);
-                                ffs.tex_head[texIndex].y_end = new byte[4];
-                                ffs.tex_head[texIndex].y_end = BitConverter.GetBytes(yEndDiv);//yEndDiv);
-                            }
-                        }
-
-                        if (par[i].IndexOf("chars count=") >= 0)
-                        {
-                            string[] splitted = par[i].Split(new char[] { ' ', '=', '\"', ',' });
-                            ch_count = Convert.ToInt32(splitted[splitted.Length - 1]);
-
-                            ffs.font_head[ffs.font_coord[dataIndex].index - 1].count_symbols = new byte[2];
-                            ffs.font_head[ffs.font_coord[dataIndex].index - 1].count_symbols = BitConverter.GetBytes(ch_count);
-                            ffs.font_head[ffs.font_coord[dataIndex].index - 1].count_kernings = BitConverter.GetBytes(0);
-                            ffs.font_head[ffs.font_coord[dataIndex].index - 1].kern_offset = BitConverter.GetBytes(kern_off);
-                        }
-
-                        if (par[i].IndexOf("char id=") >= 0)
-                        {
-                            string[] splitted = par[i].Split(new char[] { ' ', '=', '\"', ',' });
-                            int ind = 0, ind2 = 0, ind3 = 0, ind4 = 0, ind5 = 0, ind6 = 0, ind7 = 0, ind8 = 0, ind9 = 0;
-
-                            for (int t = 0; t < splitted.Length; t++)
-                            {
-                                switch (splitted[t])
-                                {
-                                    case "id":
-                                        ind = t + 1;
-                                        break;
-                                    case "x":
-                                        ind2 = t + 1;
-                                        break;
-                                    case "y":
-                                        ind3 = t + 1;
-                                        break;
-                                    case "width":
-                                        ind4 = t + 1;
-                                        break;
-                                    case "height":
-                                        ind5 = t + 1;
-                                        break;
-                                    case "xoffset":
-                                        ind6 = t + 1;
-                                        break;
-                                    case "yoffset":
-                                        ind7 = t + 1;
-                                        break;
-                                    case "xadvance":
-                                        ind8 = t + 1;
-                                        break;
-                                    case "chnl":
-                                        ind9 = t + 1;
-                                        break;
-                                }
-                            }
-
-                            short char_id = Convert.ToInt16(splitted[ind]);
-                            //char ch = (char)char_id;
-                            //string s = ch.ToString() + "\0";
-                            int x = Convert.ToInt32(splitted[ind2]);// +x_dds;
-                            int y = Convert.ToInt32(splitted[ind3]);// +dds_y;
-                            int width = Convert.ToInt32(splitted[ind4]);
-                            int height = Convert.ToInt32(splitted[ind5]);
-                            int x_offset = (x_left + x_right + x_spacing) + Convert.ToInt32(splitted[ind6]);// +x_spacing;
-                            int x_advanced = Convert.ToInt32(splitted[ind8]);
-                            int y_offset = common_height - (y_down + y_up + y_spacing) - Convert.ToInt32(splitted[ind7]);// +y_spacing;
-                            int chnl = Convert.ToInt32(splitted[ind9]);
-                            int index = font_no;
-                            int visible = 0;
-                            bool Edited = true;
-
-                            if (chnl == 15) visible = 1;
-
-                            byte[] bChar = new byte[2];
-                            bChar = BitConverter.GetBytes(char_id);
-
-                            byte[] bX = new byte[2];
-                            bX = BitConverter.GetBytes(x);
-                            byte[] bY = new byte[2];
-                            bY = BitConverter.GetBytes(y);
-                            byte[] bWidth = new byte[2];
-                            bWidth = BitConverter.GetBytes(width);
-                            byte[] bHeight = new byte[2];
-                            bHeight = BitConverter.GetBytes(height);
-                            byte[] bXoffset = new byte[2];
-                            bXoffset = BitConverter.GetBytes(x_offset);
-                            byte[] bXadvanced = new byte[2];
-                            bXadvanced = BitConverter.GetBytes(x_advanced);
-                            byte[] bYoffset = new byte[2];
-                            bYoffset = BitConverter.GetBytes(y_offset);
-                            byte[] bVisible = new byte[2];
-                            bVisible = BitConverter.GetBytes(visible);
-
-                            byte[] nil = new byte[2];
-                            newffs.coord_add(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, index, Edited, nil);
-
-                            newffs.font_coord[newffs.font_coord.Count - 1].symbol = new byte[2];
-                            Array.Copy(bChar, 0, newffs.font_coord[newffs.font_coord.Count - 1].symbol, 0, newffs.font_coord[newffs.font_coord.Count - 1].symbol.Length);
-
-                            newffs.font_coord[newffs.font_coord.Count - 1].x_start = new byte[2];
-                            Array.Copy(bX, 0, newffs.font_coord[newffs.font_coord.Count - 1].x_start, 0, newffs.font_coord[newffs.font_coord.Count - 1].x_start.Length);
-
-                            newffs.font_coord[newffs.font_coord.Count - 1].y_start = new byte[2];
-                            Array.Copy(bY, 0, newffs.font_coord[newffs.font_coord.Count - 1].y_start, 0, newffs.font_coord[newffs.font_coord.Count - 1].y_start.Length);
-
-                            newffs.font_coord[newffs.font_coord.Count - 1].coord_width = new byte[2];
-                            Array.Copy(bWidth, 0, newffs.font_coord[newffs.font_coord.Count - 1].coord_width, 0, newffs.font_coord[newffs.font_coord.Count - 1].coord_width.Length);
-
-                            newffs.font_coord[newffs.font_coord.Count - 1].coord_height = new byte[2];
-                            Array.Copy(bHeight, 0, newffs.font_coord[newffs.font_coord.Count - 1].coord_height, 0, newffs.font_coord[newffs.font_coord.Count - 1].coord_height.Length);
-
-                            newffs.font_coord[newffs.font_coord.Count - 1].x_advanced = new byte[2];
-                            Array.Copy(bXadvanced, 0, newffs.font_coord[newffs.font_coord.Count - 1].x_advanced, 0, newffs.font_coord[newffs.font_coord.Count - 1].x_advanced.Length);
-
-                            newffs.font_coord[newffs.font_coord.Count - 1].x_offset = new byte[2];
-                            Array.Copy(bXoffset, 0, newffs.font_coord[newffs.font_coord.Count - 1].x_offset, 0, newffs.font_coord[newffs.font_coord.Count - 1].x_offset.Length);
-
-                            newffs.font_coord[newffs.font_coord.Count - 1].y_offset = new byte[2];
-                            Array.Copy(bYoffset, 0, newffs.font_coord[newffs.font_coord.Count - 1].y_offset, 0, newffs.font_coord[newffs.font_coord.Count - 1].y_offset.Length);
-
-                            newffs.font_coord[newffs.font_coord.Count - 1].last_unknown_data = new byte[4];
-                            Array.Copy(bVisible, 0, newffs.font_coord[newffs.font_coord.Count - 1].last_unknown_data, 0, newffs.font_coord[newffs.font_coord.Count - 1].last_unknown_data.Length);
-
-                            newffs.font_coord[newffs.font_coord.Count - 1].texture_data = new byte[4];
-                            Array.Copy(ffs.tex_head[texIndex].tex_data, 0, newffs.font_coord[newffs.font_coord.Count - 1].texture_data, 0, newffs.font_coord[newffs.font_coord.Count - 1].texture_data.Length);
-
-                            newffs.font_coord[newffs.font_coord.Count - 1].font_data = new byte[4];
-                            Array.Copy(ffs.font_head[fontIndex].fonts_data, 0, newffs.font_coord[newffs.font_coord.Count - 1].font_data, 0, ffs.font_head[ffs.tex_head[fontIndex].font_num - 1].fonts_data.Length);
-
-
-                            sym_off += 24;
-                        }
-
-                        if (par[i].IndexOf("kernings count=") >= 0)
-                        {
-                            string[] splitted = par[i].Split(new char[] { ' ', '=', '\"', ',' });
-                            ker_count = Convert.ToInt32(splitted[splitted.Length - 1]);
-
-
-                            ffs.font_head[font_no - 1].count_kernings = new byte[2];
-                            ffs.font_head[font_no - 1].count_kernings = BitConverter.GetBytes(ker_count);
-                            ffs.font_head[font_no - 1].kern_offset = new byte[2];
-                            ffs.font_head[font_no - 1].kern_offset = BitConverter.GetBytes(kern_off);
-                            kern_off += (uint)ker_count * 8;
-                        }
-
-                        if (par[i].IndexOf("kerning first=") >= 0)
-                        {
-                            string[] splitted = par[i].Split(new char[] { ' ', '=', '\"', ',' });
-
-                            int ind = 0, ind2 = 0, ind3 = 0;
-
-                            for (int t = 0; t < splitted.Length; t++)
-                            {
-                                switch (splitted[t])
-                                {
-                                    case "first":
-                                        ind = t + 1;
-                                        break;
-                                    case "second":
-                                        ind2 = t + 1;
-                                        break;
-                                    case "amount":
-                                        ind3 = t + 1;
-                                        break;
-                                }
-                            }
-
-                            short f_char_id = Convert.ToInt16(splitted[ind]);
-                            short s_char_id = Convert.ToInt16(splitted[ind2]);
-                            int amount = Convert.ToInt32(splitted[ind3]);
-
-                            /*char f_ch = (char)f_char_id;
-                            char s_ch = (char)s_char_id;
-
-                            string f_s = f_ch.ToString() + "\0";
-                            string s_s = s_ch.ToString() + "\0";*/
-
-                            int index = font_no;
-
-                            byte[] b_f_Char = new byte[2];
-                            b_f_Char = BitConverter.GetBytes(f_char_id);
-                            byte[] b_s_Char = new byte[2];
-                            b_s_Char = BitConverter.GetBytes(s_char_id);
-                            byte[] b_amount = new byte[4];
-                            b_amount = BitConverter.GetBytes(amount);
-
-
-                            byte[] nil = new byte[2];
-                            byte[] nil2 = new byte[4];
-                            newffs.kern_add(nil, nil, nil2, index, true, nil2);
-
-                            newffs.font_kern[newffs.font_kern.Count - 1].first_char = new byte[2];
-                            Array.Copy(b_f_Char, 0, newffs.font_kern[newffs.font_kern.Count - 1].first_char, 0, newffs.font_kern[newffs.font_kern.Count - 1].first_char.Length);
-
-                            newffs.font_kern[newffs.font_kern.Count - 1].second_char = new byte[2];
-                            Array.Copy(b_s_Char, 0, newffs.font_kern[newffs.font_kern.Count - 1].second_char, 0, newffs.font_kern[newffs.font_kern.Count - 1].second_char.Length);
-
-                            newffs.font_kern[newffs.font_kern.Count - 1].amount = new byte[4];
-                            Array.Copy(b_amount, 0, newffs.font_kern[newffs.font_kern.Count - 1].amount, 0, newffs.font_kern[newffs.font_kern.Count - 1].amount.Length);
-
-                            newffs.font_kern[newffs.font_kern.Count - 1].font_data = new byte[4];
-                            Array.Copy(ffs.font_head[ffs.font_coord[fontIndex].index - 1].fonts_data, 0, newffs.font_kern[newffs.font_kern.Count - 1].font_data, 0, ffs.font_head[ffs.font_coord[fontIndex].index - 1].fonts_data.Length);
-
-
-                            ker_off += 8;
-                        }
-                    }
-
-                    /*for (int j = 0; j < ffs.font_head.Count; j++)
-                    {
-                        uint kern_off = BitConverter.ToUInt32(ffs.font_head[j].kern_offset, 0);
-                        kern_off += sym_off;
-
-                        ffs.font_head[j].kern_offset = new byte[4];
-                        ffs.font_head[j].kern_offset = BitConverter.GetBytes(kern_off);
-                    }*/
-
-
-                    for (int k = 0; k < newffs.font_coord.Count; k++)
-                    {
-                        for (int m = k - 1; m >= 0; m--)
-                        {
-                            if (BitConverter.ToInt16(newffs.font_coord[m].symbol, 0) >
-                                BitConverter.ToInt16(newffs.font_coord[m + 1].symbol, 0)
-                                && newffs.font_coord[m].index - 1 == newffs.font_coord[m + 1].index - 1)
-                            {
-                                byte[] temp_texture_data = newffs.font_coord[m].texture_data;
-                                byte[] temp_symbol = newffs.font_coord[m].symbol;
-                                byte[] temp_x_start = newffs.font_coord[m].x_start;
-                                byte[] temp_y_start = newffs.font_coord[m].y_start;
-                                byte[] temp_coord_width = newffs.font_coord[m].coord_width;
-                                byte[] temp_coord_height = newffs.font_coord[m].coord_height;
-                                byte[] temp_x_advanced = newffs.font_coord[m].x_advanced;
-                                byte[] temp_x_offset = newffs.font_coord[m].x_offset;
-                                byte[] temp_y_offset = newffs.font_coord[m].y_offset;
-                                byte[] temp_last_unknown_data = newffs.font_coord[m].last_unknown_data;
-                                int temp_index = newffs.font_coord[m].index;
-                                byte[] temp_font_data = newffs.font_coord[m].font_data;
-                                bool temp_new_coordinates = newffs.font_coord[m].new_coordinates;
-
-                                newffs.font_coord[m].texture_data = newffs.font_coord[m + 1].texture_data;
-                                newffs.font_coord[m].symbol = newffs.font_coord[m + 1].symbol;
-                                newffs.font_coord[m].x_start = newffs.font_coord[m + 1].x_start;
-                                newffs.font_coord[m].y_start = newffs.font_coord[m + 1].y_start;
-                                newffs.font_coord[m].coord_width = newffs.font_coord[m + 1].coord_width;
-                                newffs.font_coord[m].coord_height = newffs.font_coord[m + 1].coord_height;
-                                newffs.font_coord[m].x_advanced = newffs.font_coord[m + 1].x_advanced;
-                                newffs.font_coord[m].x_offset = newffs.font_coord[m + 1].x_offset;
-                                newffs.font_coord[m].y_offset = newffs.font_coord[m + 1].y_offset;
-                                newffs.font_coord[m].last_unknown_data = newffs.font_coord[m + 1].last_unknown_data;
-                                newffs.font_coord[m].index = newffs.font_coord[m + 1].index;
-                                newffs.font_coord[m].font_data = newffs.font_coord[m + 1].font_data;
-                                newffs.font_coord[m].new_coordinates = newffs.font_coord[m + 1].new_coordinates;
-
-                                newffs.font_coord[m + 1].texture_data = temp_texture_data;
-                                newffs.font_coord[m + 1].symbol = temp_symbol;
-                                newffs.font_coord[m + 1].x_start = temp_x_start;
-                                newffs.font_coord[m + 1].y_start = temp_y_start;
-                                newffs.font_coord[m + 1].coord_width = temp_coord_width;
-                                newffs.font_coord[m + 1].coord_height = temp_coord_height;
-                                newffs.font_coord[m + 1].x_advanced = temp_x_advanced;
-                                newffs.font_coord[m + 1].x_offset = temp_x_offset;
-                                newffs.font_coord[m + 1].y_offset = temp_y_offset;
-                                newffs.font_coord[m + 1].last_unknown_data = temp_last_unknown_data;
-                                newffs.font_coord[m + 1].index = temp_index;
-                                newffs.font_coord[m + 1].font_data = temp_font_data;
-                                newffs.font_coord[m + 1].new_coordinates = temp_new_coordinates;
-                            }
-                        }
-                    }
-
-
-                    for (int i = 0; i < newffs.tex_head.Count; i++)
-                    {
-                        for (int j = newffs.tex_head.Count - i - 1; j >= 0; j--)
-                        {
-                            if (BitConverter.ToString(ffs.tex_head[j].tex_data) == BitConverter.ToString(newffs.tex_head[i].tex_data))
-                            {
-                                ffs.tex_head[j].x_start = newffs.tex_head[i].x_start;
-                                ffs.tex_head[j].y_start = newffs.tex_head[i].x_start;
-                                ffs.tex_head[j].x_end = newffs.tex_head[i].x_end;
-                                ffs.tex_head[j].y_end = newffs.tex_head[i].y_end;
-                                ffs.tex_head[j].tex_num = newffs.tex_head[i].tex_num;
-                                ffs.tex_head[j].tex_data = newffs.tex_head[i].tex_data;
-                            }
-                        }
-                    }
-
-
-
-                    ffs.font_coord = newffs.font_coord;
-                    ffs.font_kern = newffs.font_kern;
-                    filltextable();
-                    fillcoordtable(sel_font);
-                    edited = true;
-
-                }
-            }
-        }
-
         private void importMultitexturesfntToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
@@ -5414,26 +3168,10 @@ namespace DoctorWhoToolsWorking
 
                 if (temp_coord.Count != 0 && coords_cnt.Length != 0 && kerns_cnt.Length != 0 && temp_tex.Count != 0)
                 {
-                    /*Font_Structure newffs = new Font_Structure();
-
-                    newffs = ffs;
-
-                    newffs.texture.Clear();
-                    newffs.font_coord.Clear();
-                    newffs.font_kern.Clear();
-                    */
-                    //MessageBox.Show(temp_coord.Count + "\r\n" + coords_cnt.Length + "\r\n" + kerns_cnt.Length + "\r\n" + temp_tex.Count + "\r\n");
-                    //try
-                    //{
-
                     Font_Structure newffs = ffs.Copy();
 
                     int links_count = BitConverter.ToInt32(ffs.links_count, 0);
                     int tex_num = 1;
-                    //newffs.texture.Clear();
-                    //newffs.font_coord.Clear();
-                    //newffs.font_kern.Clear();
-
 
                     if (temp_tex.Count <= links_count)
                     {
@@ -5576,7 +3314,7 @@ namespace DoctorWhoToolsWorking
                                     }
                                 }
 
-                                uint sym_offset = ((uint)fnt_count * 32) + 16; //Количество шрифтов * длину данных о шрифтах + 12 байт до таблиц + 4 байта для выравнивания
+                                uint sym_offset = ((uint)fnt_count * 32) + 16;
                                 uint kern_offset = sym_offset + (24 * (uint)newffs.font_coord.Count);
 
                                 for (int t = 0; t < fnt_count; t++)
@@ -5630,28 +3368,15 @@ namespace DoctorWhoToolsWorking
 
                                 label2.Text = test;
                             }
-                            //newffs.tex_head.RemoveAt
-
                         }
                         else
                         {
-                            MessageBox.Show("Пока не работает. Я думаю над этим!");
-                            //newffs = ffs;
+                            MessageBox.Show("This function doesn't work it. I'll think about it later.");
                         }
                     }
-                    //}
-                    //catch
-                   // {
-                        
-//}
                 }
-                else MessageBox.Show("Что-то не соответствует для модификации шрифтов!");
-                
-
+                else MessageBox.Show("Something wrong with mod fonts.");
             }
         }
-
-        
-
     }
 }

@@ -29,7 +29,8 @@ namespace DoctorWhoToolsWorking
         private void MainForm_Load(object sender, EventArgs e)
         {
             string xmlpath = Application.StartupPath + "\\config.xml";
-            if (File.Exists(xmlpath))
+
+            if (File.Exists(xmlpath)) //Check configuration file
             {
                 XmlReader configfile = new XmlTextReader(xmlpath);
                 XmlSerializer settingsDessializer = new XmlSerializer(typeof(Settings));

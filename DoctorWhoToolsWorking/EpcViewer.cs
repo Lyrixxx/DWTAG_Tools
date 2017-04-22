@@ -387,7 +387,7 @@ namespace DoctorWhoToolsWorking
             {
 
                 FolderBrowserDialog fbd = new FolderBrowserDialog();
-                fbd.Description = "Выберите папку для сохранения выбранной текстуры. Название текстуры само добавится.";
+                fbd.Description = "Choose folder for saving chose textures. Texture name will add itself.";
                 
                 if (fbd.ShowDialog() == DialogResult.OK)
                 {
@@ -466,7 +466,7 @@ namespace DoctorWhoToolsWorking
 
                     if (temp_content.Length != tex_files[sel_file].tex_content.Length)
                     {
-                        MessageBox.Show("Программа временно не может сохранять текстуру, отличающуюся по размеру.", "Нам очень жаль, но не переживайте. Мы работаем над этой проблемой.");
+                        MessageBox.Show("Sizes of textures don't match.", "We're sorry.");
                     }
                     else
                     {
