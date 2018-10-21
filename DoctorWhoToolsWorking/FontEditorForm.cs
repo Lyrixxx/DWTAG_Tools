@@ -23,6 +23,7 @@ namespace DoctorWhoToolsWorking
         bool edited, read, rel_exists, tex_count_changed; //Some booleans.
 
         OpenFileDialog OpenFont = new OpenFileDialog();
+
         public FontEditorForm()
         {
             InitializeComponent();
@@ -314,7 +315,7 @@ namespace DoctorWhoToolsWorking
                                     {
                                         temp.y_offset = (short)line_height;
                                         temp.y_offset -= Convert.ToInt16(par[t + 1]);
-                                        temp.y_offset += (short)(y_spacing + (y_up + y_down));
+                                        temp.y_offset -= (short)(y_spacing + (y_up + y_down));
                                     }
                                     if (par[t] == "xadvance")
                                     {
@@ -686,15 +687,7 @@ namespace DoctorWhoToolsWorking
             }
         }
 
-        //Function for padding some blocks
-        uint pad_it(uint num, uint pad)
-        {
-            uint t;
-            t = num % pad;
-
-            if (Convert.ToBoolean(t)) num += pad - t;
-            return (num);
-        }
+        
 
         //Function for saving changes in rel file (need for changing offset textures in rel file)
         private void SaveRelFile(int count_tex, int links_count, byte[] content, string path)
@@ -704,7 +697,7 @@ namespace DoctorWhoToolsWorking
             if(Methods.FindStartOfStringSomething(content, 0, "RELO") == 0 && Methods.FindStartOfStringSomething(content, 15, "PTEX") == 16)
             {
                 uint size_part = 12 + 8 + (uint)(count_tex * 8);
-                uint block_size = pad_it(size_part + 16, 16);
+                uint block_size = Methods.pad_it(size_part + 16, 16);
                 byte[] binSize_part = new byte[4];
                 byte[] binBlock_size = new byte[4];
 
@@ -867,7 +860,7 @@ namespace DoctorWhoToolsWorking
             tex_common_size += 16;
 
 
-            tex_common_size = Convert.ToInt32(pad_it((uint)tex_common_size, 16));
+            tex_common_size = Convert.ToInt32(Methods.pad_it((uint)tex_common_size, 16));
 
             byte[] tex_size = new byte[4];
             tex_size = BitConverter.GetBytes(tex_common_size);
@@ -1011,7 +1004,7 @@ namespace DoctorWhoToolsWorking
             block_size = temp_table.Length + bin_coords.Length + bin_kerns.Length - 16;
 
             common_size = block_size + 16;
-            common_size = Convert.ToInt32(pad_it((uint)common_size, 8));
+            common_size = Convert.ToInt32(Methods.pad_it((uint)common_size, 8));
 
 
             byte[] size = new byte[4];
@@ -1140,7 +1133,7 @@ namespace DoctorWhoToolsWorking
             }
             catch
             {
-                MessageBox.Show("Программа занята другим процессом", "Ошибка");
+                MessageBox.Show("The tool is busy by another process", "Error");
                 read = false;
             }
 
@@ -3177,17 +3170,17 @@ namespace DoctorWhoToolsWorking
                     {
                         for (int tex = 0; tex < temp_tex.Count; tex++)
                         {
-                            if ((temp_tex[tex].tex_num) > tex_num) tex_num = temp_tex[tex].tex_num;
+                            if ((temp_tex[tex].tex_num + 1) > tex_num) tex_num = temp_tex[tex].tex_num + 1;
                         }
 
                         uint offset = (uint)(40 * temp_tex.Count) + 12 + (uint)(8 * tex_num);
 
                         if (fnt_struct.TextureLoaded(ref newffs, temp_tex, GetPath, offset))
                         {
-                            if (BitConverter.ToInt32(ffs.tex_count, 0) != tex_num + 1) tex_count_changed = true;
+                            if (BitConverter.ToInt32(ffs.tex_count, 0) != tex_num) tex_count_changed = true;
 
                             newffs.tex_count = new byte[4];
-                            newffs.tex_count = BitConverter.GetBytes(tex_num + 1);
+                            newffs.tex_count = BitConverter.GetBytes(tex_num);
                             newffs.links_count = new byte[4];
                             newffs.links_count = BitConverter.GetBytes(temp_tex.Count);
 

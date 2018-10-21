@@ -78,22 +78,11 @@ namespace DoctorWhoToolsWorking
             return fi[i].Name.Substring(0, (fi[i].Name.Length - fi[i].Extension.Length));
         }
 
-
-        uint pad_it(uint num, uint pad)
-        {
-            uint t;
-            t = num % pad;
-
-            if (Convert.ToBoolean(t)) num += pad - t;
-            return (num);
-        }
-
         private void button1_Click(object sender, EventArgs e)
         {
-            
+            if(Directory.Exists(MainForm.settings.inputpath) && Directory.Exists(MainForm.settings.outputpath))
+            { 
             DirectoryInfo di = new DirectoryInfo(MainForm.settings.inputpath);
-            if (di.Exists == true)
-            {
                 fi = di.GetFiles();
                 for (int i = 0; i < fi.Length; i++)
                 {
@@ -113,7 +102,7 @@ namespace DoctorWhoToolsWorking
                         }
                         catch
                         {
-                            MessageBox.Show("Программа занята другим процессом", "Ошибка");
+                            MessageBox.Show("The tool is busy by another process", "Error");
                             read = false;
                         }
                         if (read)
@@ -164,11 +153,13 @@ namespace DoctorWhoToolsWorking
 
                 }
             }
-            else listBox1.Items.Add("Check paths in settings form!");
+            else listBox1.Items.Add("Please check input/output paths in config file!");
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
+            if(Directory.Exists(MainForm.settings.inputpath) && Directory.Exists(MainForm.settings.outputpath))
+            {
             DirectoryInfo dir = new DirectoryInfo(MainForm.settings.inputpath);
             fi = dir.GetFiles();
 
@@ -193,7 +184,7 @@ namespace DoctorWhoToolsWorking
                         }
                         catch
                         {
-                            MessageBox.Show("Программа занята другим процессом", "Ошибка");
+                            MessageBox.Show("The tool is busy by another process", "Error");
                             read = false;
                         }
                        if (read)
@@ -336,9 +327,6 @@ namespace DoctorWhoToolsWorking
                                    offset = poz += 12;
                                    int tableLength = 8 * str_collection.Count;
                                    byte[] new_table = new byte[tableLength];
-                                   //Array.Copy(binContent, offset, new_table, 0, tableLength);
-
-                                       //fs.Write(new_table, 0, new_table.Length);
 
                                        for (int k = 0; k < str_collection.Count; k++)
                                        {
@@ -409,7 +397,7 @@ namespace DoctorWhoToolsWorking
                                    byte[] result = newTextBlock.ToArray();
                                    newTextBlock.Close();
                                    uint textBlockSize = (uint)result.Length - 16;
-                                   uint moduleBlockSize = pad_it((uint)result.Length, (uint)result.Length / 2);
+                                   uint moduleBlockSize = Methods.alt_pad_it((uint)result.Length);//Methods.pad_it((uint)result.Length, (uint)result.Length / 2);
 
                                    byte[] binModuleBlockSize = new byte[4];
                                    binModuleBlockSize = BitConverter.GetBytes(moduleBlockSize);
@@ -442,6 +430,8 @@ namespace DoctorWhoToolsWorking
                    }
                }
             }
+            else listBox1.Items.Add("Please check input/output paths in config file!");
+        }
 
         public void ReadDatFile(int poz, int offset, byte[] BinContent)
         {
@@ -517,153 +507,157 @@ namespace DoctorWhoToolsWorking
 
         private void button3_Click(object sender, EventArgs e)
         {
-            DirectoryInfo di = new DirectoryInfo(MainForm.settings.inputpath);
-            fi = di.GetFiles();
-
-            for (int i = 0; i < fi.Length; i++)
+            if (Directory.Exists(MainForm.settings.inputpath) && Directory.Exists(MainForm.settings.outputpath))
             {
-                if (fi[i].Extension == ".dat")
+                DirectoryInfo di = new DirectoryInfo(MainForm.settings.inputpath);
+                fi = di.GetFiles();
+
+                for (int i = 0; i < fi.Length; i++)
                 {
-                    FileStream fs = new FileStream(fi[i].FullName, FileMode.Open);
-                    byte[] binContent = Methods.ReadFull(fs);
-                    fs.Close();
-
-                    if (Methods.FindStartOfStringSomething(binContent, 0, "INFO") == 0
-                        && Methods.FindStartOfStringSomething(binContent, 0, "PTEX") > 0
-                         && Methods.FindStartOfStringSomething(binContent, 0, "DDS ") > 0)
+                    if (fi[i].Extension == ".dat")
                     {
-                        bool work = false;
+                        FileStream fs = new FileStream(fi[i].FullName, FileMode.Open);
+                        byte[] binContent = Methods.ReadFull(fs);
+                        fs.Close();
 
-                        if (texCollect.Count != 0) texCollect.Clear();
-
-                        int poz = 4;
-                        byte[] temp = new byte[4];
-                        Array.Copy(binContent, poz, temp, 0, temp.Length);
-                        uint offset_info = BitConverter.ToUInt32(temp, 0);
-                        uint offset = BitConverter.ToUInt32(temp, 0) + 16;
-                        temp = new byte[4];
-                        Array.Copy(binContent, offset, temp, 0, temp.Length);
-                        int counttexblocks = BitConverter.ToInt32(temp, 0);
-                        offset += 4;
-                        temp = new byte[4];
-                        Array.Copy(binContent, offset, temp, 0, temp.Length);
-                        offset += 4;
-                        int counttextures = BitConverter.ToInt32(temp, 0);
-                        temp = new byte[4];
-                        Array.Copy(binContent, offset, temp, 0, temp.Length);
-                        offset += 4;
-                        poz = BitConverter.ToInt32(temp, 0) + 16 + (int)offset_info;
-
-                        for (int j = 0; j < counttexblocks; j++)
+                        if (Methods.FindStartOfStringSomething(binContent, 0, "INFO") == 0
+                            && Methods.FindStartOfStringSomething(binContent, 0, "PTEX") > 0
+                             && Methods.FindStartOfStringSomething(binContent, 0, "DDS ") > 0)
                         {
-                            float x_start = 0, y_start = 0, x_end = 0, y_end = 0;
-                            uint texdata = 0;
-                            int texnum = 0;
+                            bool work = false;
 
+                            if (texCollect.Count != 0) texCollect.Clear();
+
+                            int poz = 4;
+                            byte[] temp = new byte[4];
+                            Array.Copy(binContent, poz, temp, 0, temp.Length);
+                            uint offset_info = BitConverter.ToUInt32(temp, 0);
+                            uint offset = BitConverter.ToUInt32(temp, 0) + 16;
                             temp = new byte[4];
                             Array.Copy(binContent, offset, temp, 0, temp.Length);
-                            texdata = BitConverter.ToUInt32(temp, 0);
+                            int counttexblocks = BitConverter.ToInt32(temp, 0);
                             offset += 4;
-
                             temp = new byte[4];
                             Array.Copy(binContent, offset, temp, 0, temp.Length);
-                            x_start = BitConverter.ToSingle(temp, 0);
                             offset += 4;
-
+                            int counttextures = BitConverter.ToInt32(temp, 0);
                             temp = new byte[4];
                             Array.Copy(binContent, offset, temp, 0, temp.Length);
-                            y_start = BitConverter.ToSingle(temp, 0);
                             offset += 4;
+                            poz = BitConverter.ToInt32(temp, 0) + 16 + (int)offset_info;
 
-                            temp = new byte[4];
-                            Array.Copy(binContent, offset, temp, 0, temp.Length);
-                            x_end = BitConverter.ToSingle(temp, 0);
-                            offset += 12;
-
-                            temp = new byte[4];
-                            Array.Copy(binContent, offset, temp, 0, temp.Length);
-                            y_end = BitConverter.ToSingle(temp, 0);
-                            offset += 12;
-
-                            temp = new byte[4];
-                            Array.Copy(binContent, offset, temp, 0, temp.Length);
-                            texnum = BitConverter.ToInt32(temp, 0);
-                            offset += 4;
-
-                            texCollect.Add(new textureswork(texdata, x_start, y_start, x_end, y_end, texnum));
-                        }
-
-                        if (offset == poz) work = true;
-
-                        if (work)
-                        {
-                            uint tex_offset = 0;
-                            uint tex_size = 0;
-
-                            string info = null;
-                            int[] width = new int[counttextures];
-                            int[] height = new int[counttextures];
-
-                            for (int t = 0; t < counttextures; t++)
+                            for (int j = 0; j < counttexblocks; j++)
                             {
+                                float x_start = 0, y_start = 0, x_end = 0, y_end = 0;
+                                uint texdata = 0;
+                                int texnum = 0;
+
                                 temp = new byte[4];
                                 Array.Copy(binContent, offset, temp, 0, temp.Length);
-                                tex_offset = BitConverter.ToUInt32(temp, 0) + 16 + offset_info;
+                                texdata = BitConverter.ToUInt32(temp, 0);
                                 offset += 4;
 
                                 temp = new byte[4];
                                 Array.Copy(binContent, offset, temp, 0, temp.Length);
-                                tex_size = BitConverter.ToUInt32(temp, 0);
+                                x_start = BitConverter.ToSingle(temp, 0);
                                 offset += 4;
 
-                                byte[] texture = new byte[tex_size];
-                                Array.Copy(binContent, tex_offset, texture, 0, texture.Length);
-
-                                if (File.Exists(MainForm.settings.outputpath + "\\" + GetNameOnly(i) + "_" + (t + 1).ToString() + ".dds")) File.Delete(MainForm.settings.outputpath + "\\" + GetNameOnly(i) + "_" + (t + 1).ToString() + ".dds");
-                                fs = new FileStream(MainForm.settings.outputpath + "\\" + GetNameOnly(i) + "_" + (t + 1).ToString() + ".dds", FileMode.CreateNew);
-                                fs.Write(texture, 0, texture.Length);
-                                fs.Close();
+                                temp = new byte[4];
+                                Array.Copy(binContent, offset, temp, 0, temp.Length);
+                                y_start = BitConverter.ToSingle(temp, 0);
+                                offset += 4;
 
                                 temp = new byte[4];
-                                Array.Copy(texture, 12, temp, 0, temp.Length);
-                                height[t] = BitConverter.ToInt32(temp, 0);
+                                Array.Copy(binContent, offset, temp, 0, temp.Length);
+                                x_end = BitConverter.ToSingle(temp, 0);
+                                offset += 12;
 
                                 temp = new byte[4];
-                                Array.Copy(texture, 16, temp, 0, temp.Length);
-                                width[t] = BitConverter.ToInt32(temp, 0);
+                                Array.Copy(binContent, offset, temp, 0, temp.Length);
+                                y_end = BitConverter.ToSingle(temp, 0);
+                                offset += 12;
 
-                                info += GetNameOnly(i) + "_" + (t + 1).ToString() + ".dds\r\n";
+                                temp = new byte[4];
+                                Array.Copy(binContent, offset, temp, 0, temp.Length);
+                                texnum = BitConverter.ToInt32(temp, 0);
+                                offset += 4;
 
-                                texture = null;
+                                texCollect.Add(new textureswork(texdata, x_start, y_start, x_end, y_end, texnum));
                             }
 
-                            for (int l = 0; l < texCollect.Count; l++)
+                            if (offset == poz) work = true;
+
+                            if (work)
                             {
-                                info += "texdata\t" + texCollect[l].texdata.ToString()
-                                    + "\tx_start\t" + (texCollect[l].x_start * width[texCollect[l].texnum])
-                                    + "\ty_start\t" + (texCollect[l].y_start * height[texCollect[l].texnum])
-                                    + "\tx_end\t" + (texCollect[l].x_end * width[texCollect[l].texnum])
-                                    + "\ty_end\t" + (texCollect[l].y_end * height[texCollect[l].texnum])
-                                    + "\tfontnum\t" + (texCollect[l].texnum + 1) + "\r\n";
+                                uint tex_offset = 0;
+                                uint tex_size = 0;
+
+                                string info = null;
+                                int[] width = new int[counttextures];
+                                int[] height = new int[counttextures];
+
+                                for (int t = 0; t < counttextures; t++)
+                                {
+                                    temp = new byte[4];
+                                    Array.Copy(binContent, offset, temp, 0, temp.Length);
+                                    tex_offset = BitConverter.ToUInt32(temp, 0) + 16 + offset_info;
+                                    offset += 4;
+
+                                    temp = new byte[4];
+                                    Array.Copy(binContent, offset, temp, 0, temp.Length);
+                                    tex_size = BitConverter.ToUInt32(temp, 0);
+                                    offset += 4;
+
+                                    byte[] texture = new byte[tex_size];
+                                    Array.Copy(binContent, tex_offset, texture, 0, texture.Length);
+
+                                    if (File.Exists(MainForm.settings.outputpath + "\\" + GetNameOnly(i) + "_" + (t + 1).ToString() + ".dds")) File.Delete(MainForm.settings.outputpath + "\\" + GetNameOnly(i) + "_" + (t + 1).ToString() + ".dds");
+                                    fs = new FileStream(MainForm.settings.outputpath + "\\" + GetNameOnly(i) + "_" + (t + 1).ToString() + ".dds", FileMode.CreateNew);
+                                    fs.Write(texture, 0, texture.Length);
+                                    fs.Close();
+
+                                    temp = new byte[4];
+                                    Array.Copy(texture, 12, temp, 0, temp.Length);
+                                    height[t] = BitConverter.ToInt32(temp, 0);
+
+                                    temp = new byte[4];
+                                    Array.Copy(texture, 16, temp, 0, temp.Length);
+                                    width[t] = BitConverter.ToInt32(temp, 0);
+
+                                    info += GetNameOnly(i) + "_" + (t + 1).ToString() + ".dds\r\n";
+
+                                    texture = null;
+                                }
+
+                                for (int l = 0; l < texCollect.Count; l++)
+                                {
+                                    info += "texdata\t" + texCollect[l].texdata.ToString()
+                                        + "\tx_start\t" + (texCollect[l].x_start * width[texCollect[l].texnum])
+                                        + "\ty_start\t" + (texCollect[l].y_start * height[texCollect[l].texnum])
+                                        + "\tx_end\t" + (texCollect[l].x_end * width[texCollect[l].texnum])
+                                        + "\ty_end\t" + (texCollect[l].y_end * height[texCollect[l].texnum])
+                                        + "\tfontnum\t" + (texCollect[l].texnum + 1) + "\r\n";
+                                }
+
+                                info = info.Substring(0, (info.Length - 2));
+
+                                StreamWriter sw = new StreamWriter(MainForm.settings.outputpath + "\\" + GetNameOnly(i) + ".txt");
+                                sw.Write(info);
+                                sw.Close();
+
+                                listBox1.Items.Add("File " + fi[i].Name + " exported");
                             }
-
-                            info = info.Substring(0, (info.Length - 2));
-
-                            StreamWriter sw = new StreamWriter(MainForm.settings.outputpath + "\\" + GetNameOnly(i) + ".txt");
-                            sw.Write(info);
-                            sw.Close();
-
-                            listBox1.Items.Add("File " + fi[i].Name + " exported");
+                            else
+                            {
+                                listBox1.Items.Add("Error in file" + fi[i].Name + ". Please contact with me.");
+                                binContent = null;
+                            }
                         }
-                        else
-                        {
-                            listBox1.Items.Add("Error in file" + fi[i].Name + ". Please contact with me.");
-                            binContent = null;
-                        }
+                        else binContent = null;
                     }
-                    else binContent = null;
                 }
             }
+            else listBox1.Items.Add("Please check input/output paths in config file!");
         }
 
     }
