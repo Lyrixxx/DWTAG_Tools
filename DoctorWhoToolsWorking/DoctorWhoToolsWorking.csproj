@@ -87,6 +87,7 @@
     <Compile Include="TextTool.Designer.cs">
       <DependentUpon>TextTool.cs</DependentUpon>
     </Compile>
+    <Compile Include="Threads.cs" />
     <EmbeddedResource Include="About.resx">
       <DependentUpon>About.cs</DependentUpon>
     </EmbeddedResource>

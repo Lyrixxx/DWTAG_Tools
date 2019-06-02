@@ -45,10 +45,6 @@
             this.y_offset_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.visible_column = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridTextures = new System.Windows.Forms.DataGridView();
-            this.num_dds = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.width_dds = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.height_dds = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dds_size = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.exportTextureddsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importTextureddsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -67,6 +63,10 @@
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.num_dds = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.width_dds = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.height_dds = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dds_size = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridCoord)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridTextures)).BeginInit();
             this.contextMenuStrip2.SuspendLayout();
@@ -76,6 +76,8 @@
             // 
             // dataGridCoord
             // 
+            this.dataGridCoord.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dataGridCoord.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.dataGridCoord.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridCoord.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.id_char,
@@ -101,49 +103,41 @@
             // 
             this.id_char.HeaderText = "№ char";
             this.id_char.Name = "id_char";
-            this.id_char.Width = 60;
             // 
             // symbol_column
             // 
             this.symbol_column.HeaderText = "Char";
             this.symbol_column.Name = "symbol_column";
-            this.symbol_column.Width = 50;
             // 
             // x_start_column
             // 
             this.x_start_column.HeaderText = "X start";
             this.x_start_column.Name = "x_start_column";
-            this.x_start_column.Width = 80;
             // 
             // x_end_column
             // 
             this.x_end_column.HeaderText = "X end";
             this.x_end_column.Name = "x_end_column";
-            this.x_end_column.Width = 80;
             // 
             // y_start_column
             // 
             this.y_start_column.HeaderText = "Y start";
             this.y_start_column.Name = "y_start_column";
-            this.y_start_column.Width = 80;
             // 
             // y_end_column
             // 
             this.y_end_column.HeaderText = "Y end";
             this.y_end_column.Name = "y_end_column";
-            this.y_end_column.Width = 80;
             // 
             // width_column
             // 
             this.width_column.HeaderText = "Width";
             this.width_column.Name = "width_column";
-            this.width_column.Width = 80;
             // 
             // height_column
             // 
             this.height_column.HeaderText = "Height";
             this.height_column.Name = "height_column";
-            this.height_column.Width = 80;
             // 
             // dds_number
             // 
@@ -186,34 +180,6 @@
             this.dataGridTextures.TabIndex = 4;
             this.dataGridTextures.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridTextures_CellMouseClick);
             // 
-            // num_dds
-            // 
-            this.num_dds.HeaderText = "№ dds";
-            this.num_dds.Name = "num_dds";
-            this.num_dds.ReadOnly = true;
-            this.num_dds.Width = 70;
-            // 
-            // width_dds
-            // 
-            this.width_dds.FillWeight = 40.17488F;
-            this.width_dds.HeaderText = "Width";
-            this.width_dds.Name = "width_dds";
-            this.width_dds.ReadOnly = true;
-            // 
-            // height_dds
-            // 
-            this.height_dds.FillWeight = 256.4102F;
-            this.height_dds.HeaderText = "Height";
-            this.height_dds.Name = "height_dds";
-            this.height_dds.ReadOnly = true;
-            // 
-            // dds_size
-            // 
-            this.dds_size.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.dds_size.HeaderText = "Texture size";
-            this.dds_size.Name = "dds_size";
-            this.dds_size.ReadOnly = true;
-            // 
             // contextMenuStrip2
             // 
             this.contextMenuStrip2.ImageScalingSize = new System.Drawing.Size(20, 20);
@@ -223,38 +189,41 @@
             this.importMultitexturesfntToolStripMenuItem,
             this.importOldWorkedMethodfntToolStripMenuItem});
             this.contextMenuStrip2.Name = "contextMenuStrip2";
-            this.contextMenuStrip2.Size = new System.Drawing.Size(306, 136);
+            this.contextMenuStrip2.Size = new System.Drawing.Size(376, 132);
             // 
             // exportTextureddsToolStripMenuItem
             // 
             this.exportTextureddsToolStripMenuItem.Name = "exportTextureddsToolStripMenuItem";
-            this.exportTextureddsToolStripMenuItem.Size = new System.Drawing.Size(305, 26);
+            this.exportTextureddsToolStripMenuItem.Size = new System.Drawing.Size(375, 32);
             this.exportTextureddsToolStripMenuItem.Text = "Export texture (*.dds)";
             this.exportTextureddsToolStripMenuItem.Click += new System.EventHandler(this.exportTextureddsToolStripMenuItem_Click);
             // 
             // importTextureddsToolStripMenuItem
             // 
             this.importTextureddsToolStripMenuItem.Name = "importTextureddsToolStripMenuItem";
-            this.importTextureddsToolStripMenuItem.Size = new System.Drawing.Size(305, 26);
+            this.importTextureddsToolStripMenuItem.Size = new System.Drawing.Size(375, 32);
             this.importTextureddsToolStripMenuItem.Text = "Import texture (*.dds)";
             this.importTextureddsToolStripMenuItem.Click += new System.EventHandler(this.importTextureddsToolStripMenuItem_Click);
             // 
             // importMultitexturesfntToolStripMenuItem
             // 
             this.importMultitexturesfntToolStripMenuItem.Name = "importMultitexturesfntToolStripMenuItem";
-            this.importMultitexturesfntToolStripMenuItem.Size = new System.Drawing.Size(305, 26);
+            this.importMultitexturesfntToolStripMenuItem.Size = new System.Drawing.Size(375, 32);
             this.importMultitexturesfntToolStripMenuItem.Text = "Import multitextures (*.fnt)";
             this.importMultitexturesfntToolStripMenuItem.Click += new System.EventHandler(this.importMultitexturesfntToolStripMenuItem_Click);
             // 
             // importOldWorkedMethodfntToolStripMenuItem
             // 
             this.importOldWorkedMethodfntToolStripMenuItem.Name = "importOldWorkedMethodfntToolStripMenuItem";
-            this.importOldWorkedMethodfntToolStripMenuItem.Size = new System.Drawing.Size(305, 26);
+            this.importOldWorkedMethodfntToolStripMenuItem.Size = new System.Drawing.Size(375, 32);
             this.importOldWorkedMethodfntToolStripMenuItem.Text = "Import old worked method (*.fnt)";
             this.importOldWorkedMethodfntToolStripMenuItem.Click += new System.EventHandler(this.importOldWorkedMethodfntToolStripMenuItem_Click);
             // 
             // dataGridView1
             // 
+            this.dataGridView1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dataGridView1.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Column1,
@@ -319,7 +288,7 @@
             this.fileToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1216, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(1191, 36);
             this.menuStrip1.TabIndex = 9;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -331,14 +300,14 @@
             this.saveAsToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(44, 24);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(54, 32);
             this.fileToolStripMenuItem.Text = "File";
             // 
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
             this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(231, 26);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(287, 32);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
@@ -346,7 +315,7 @@
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(231, 26);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(287, 32);
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
@@ -355,16 +324,46 @@
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
             this.saveAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.S)));
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(231, 26);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(287, 32);
             this.saveAsToolStripMenuItem.Text = "Save As..";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click_1);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(231, 26);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(287, 32);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
+            // num_dds
+            // 
+            this.num_dds.HeaderText = "№ dds";
+            this.num_dds.Name = "num_dds";
+            this.num_dds.ReadOnly = true;
+            this.num_dds.Width = 86;
+            // 
+            // width_dds
+            // 
+            this.width_dds.FillWeight = 40.17488F;
+            this.width_dds.HeaderText = "Width";
+            this.width_dds.Name = "width_dds";
+            this.width_dds.ReadOnly = true;
+            this.width_dds.Width = 128;
+            // 
+            // height_dds
+            // 
+            this.height_dds.FillWeight = 256.4102F;
+            this.height_dds.HeaderText = "Height";
+            this.height_dds.Name = "height_dds";
+            this.height_dds.ReadOnly = true;
+            this.height_dds.Width = 128;
+            // 
+            // dds_size
+            // 
+            this.dds_size.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.dds_size.HeaderText = "Texture size";
+            this.dds_size.Name = "dds_size";
+            this.dds_size.ReadOnly = true;
             // 
             // FontEditorForm
             // 
@@ -372,7 +371,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(1216, 663);
+            this.ClientSize = new System.Drawing.Size(1191, 663);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.comboBox1);
@@ -403,10 +402,6 @@
         private System.Windows.Forms.DataGridView dataGridTextures;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip2;
         private System.Windows.Forms.ToolStripMenuItem exportTextureddsToolStripMenuItem;
-        private System.Windows.Forms.DataGridViewTextBoxColumn num_dds;
-        private System.Windows.Forms.DataGridViewTextBoxColumn width_dds;
-        private System.Windows.Forms.DataGridViewTextBoxColumn height_dds;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dds_size;
         private System.Windows.Forms.ToolStripMenuItem importTextureddsToolStripMenuItem;
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
@@ -436,5 +431,9 @@
         private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem importOldWorkedMethodfntToolStripMenuItem;
+        private System.Windows.Forms.DataGridViewTextBoxColumn num_dds;
+        private System.Windows.Forms.DataGridViewTextBoxColumn width_dds;
+        private System.Windows.Forms.DataGridViewTextBoxColumn height_dds;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dds_size;
     }
 }

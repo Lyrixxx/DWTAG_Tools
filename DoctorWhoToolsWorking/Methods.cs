@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.IO;
 
@@ -42,39 +40,59 @@ namespace DoctorWhoToolsWorking
             }
         }
 
-       /* public static string ConvertToAnotherLanguage(string str, int ASCII_N)
-        {
-            try
-            {
-                Encoding UTF8_text = Encoding.UTF8;
-                byte[] temp_string = new byte[str.Length];
-                temp_string = UTF8_text.GetBytes(str);
-                temp_string = Encoding.Convert(UTF8_text, ASCIIEncoding.GetEncoding(1252), temp_string);
-                return ASCIIEncoding.GetEncoding(ASCII_N).GetString(temp_string);
-            }
-            catch
-            {
-                return "Error";
-            }
-        }*/
+        /* public static string ConvertToAnotherLanguage(string str, int ASCII_N)
+         {
+             try
+             {
+                 Encoding UTF8_text = Encoding.UTF8;
+                 byte[] temp_string = new byte[str.Length];
+                 temp_string = UTF8_text.GetBytes(str);
+                 temp_string = Encoding.Convert(UTF8_text, ASCIIEncoding.GetEncoding(1252), temp_string);
+                 return ASCIIEncoding.GetEncoding(ASCII_N).GetString(temp_string);
+             }
+             catch
+             {
+                 return "Error";
+             }
+         }*/
 
-       /* public static string ConvertToLatin(string str, int ASCII_N)
+        /* public static string ConvertToLatin(string str, int ASCII_N)
+         {
+             try
+             {
+                 Encoding UTF8_text = Encoding.UTF8;
+                 byte[] temp_string = new byte[str.Length];
+                 string temp_str;
+                 temp_string = ASCIIEncoding.GetEncoding(ASCII_N).GetBytes(str);
+                 temp_str = ASCIIEncoding.GetEncoding(1252).GetString(temp_string);
+                 temp_string = Encoding.Convert(ASCIIEncoding.GetEncoding(1252), UTF8_text, temp_string);
+                 return UTF8_text.GetString(temp_string);
+             }
+             catch
+             {
+                 return "Error";
+             }
+         }*/
+
+        //Function for padding some blocks
+        public static uint pad_it(uint num, uint pad)
         {
-            try
+            uint t;
+            t = num % pad;
+
+            if (Convert.ToBoolean(t)) num += pad - t;
+            return (num);
+        }
+
+        public static uint alt_pad_it(uint size)
+        {
+            while(size % 4 != 0)
             {
-                Encoding UTF8_text = Encoding.UTF8;
-                byte[] temp_string = new byte[str.Length];
-                string temp_str;
-                temp_string = ASCIIEncoding.GetEncoding(ASCII_N).GetBytes(str);
-                temp_str = ASCIIEncoding.GetEncoding(1252).GetString(temp_string);
-                temp_string = Encoding.Convert(ASCIIEncoding.GetEncoding(1252), UTF8_text, temp_string);
-                return UTF8_text.GetString(temp_string);
+                size++;
             }
-            catch
-            {
-                return "Error";
-            }
-        }*/
+
+            return size;
+        }
 
         public static string ConvertHexToString(byte[] array, int poz, int str_length) //Функция для преобразования байтов в символы
         {
@@ -101,6 +119,7 @@ namespace DoctorWhoToolsWorking
             }
             return poz;
         }
+
         public static bool CheckHeader(byte[] array, int offset, string header)
         {
             if (FindStartOfStringSomething(array, offset, header) == -1)
